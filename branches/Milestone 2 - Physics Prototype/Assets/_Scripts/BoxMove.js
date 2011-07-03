@@ -51,34 +51,35 @@ function FixedUpdate ()
 {
 	spinAmount = Time.deltaTime * cubeSpeed;
 	
-    // Get the input and set variables for it
-	if(allowInput){
-		jump = Input.GetButtonDown ("Jump");
-		horizontal = Input.GetAxis("Horizontal"); 
-		vertical = Input.GetAxis("Vertical");
-	}
-
 	if(rolling){
 		switch(direction){
-			case "forward" : RollForward(); break;
-			case "backward" : RollBackward(); break;
 			case "left" : RollLeft(); break;
 			case "right" : RollRight(); break;
+			case "forward" : RollForward(); break;
+			case "backward" : RollBackward(); break;
 			default : Debug.Log("asked to roll an invalid direction: " + direction);
 		}
 	} else if(grounded) { // check for input
-		if(vertical > 0){ // moving forward
-			startRolling("forward");
-			RollForward();
-		} else if(vertical < 0){      // moving back
-			startRolling("backward");
-			RollBackward();
-		} else if(horizontal > 0){    // moving right
+		
+		// Get the input and set variables for it
+		if(allowInput){
+			jump = Input.GetButtonDown ("Jump");
+			vertical = Input.GetAxisRaw("Vertical");
+			horizontal = Input.GetAxisRaw("Horizontal"); 
+		}
+		
+		if(horizontal > 0){    // moving right
 			startRolling("right");
 			RollRight();
 		} else if(horizontal < 0){    // moving left
 			startRolling("left");
 			RollLeft();
+		} else if(vertical > 0){ // moving forward
+			startRolling("forward");
+			RollForward();
+		} else if(vertical < 0){      // moving back
+			startRolling("backward");
+			RollBackward();
 		}
 
 		// This part is for jumping. I only let jump force be applied every 10 physics frames so
