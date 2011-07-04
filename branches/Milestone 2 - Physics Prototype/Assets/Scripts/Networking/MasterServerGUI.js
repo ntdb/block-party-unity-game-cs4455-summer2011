@@ -74,15 +74,6 @@ function TestConnection() {
 			doneTesting = false;
 			break;
 			
-		case ConnectionTesterStatus.PrivateIPHasNATPunchThrough:
-			if(probingPublicIP)
-				testMessage = "Non-connectable public IP address (port "+ serverPort +" blocked), NAT punchthrough can circumvent the firewall.";
-			else
-				testMessage = "NAT punchthrough capable. Enabling NAT punchthrough functionality.";
-			useNat = true;
-			doneTesting = true;
-			break;
-		
 		case ConnectionTesterStatus.PublicIPIsConnectable:
 			testMessage = "Directly connectable public IP address.";
 			useNat = false;
