@@ -3,18 +3,22 @@ var cubeSpeed = 800;
 var cubeSize : float = 1;
 var jumpSpeed = 5.000;
 
+// Other things...
+var Cam : GameObject;
+
 // These variables are there for use by the script and don't need to be edited
 private var state = 0;
 private var grounded = false;
 private var jumpLimit = 0;
- var fwdWeight : float = 0.5;
- var upWeight : float = -0.5;
+private var fwdWeight : float = 0.5;
+private var upWeight : float = -0.5;
 private var totalRotation : float = 0; // determines if we're past the 90 degrees when rolling
 private var rolling : boolean = false;
 private var allowInput : boolean = true;
 private var direction = "";
 private var preRollPosition : Vector3;
 private var spinAmount : float;
+var lookRot : float;
 
 // Don't let the Physics Engine rotate this physics object so it doesn't fall over when running
 function Awake ()
@@ -25,7 +29,7 @@ function Awake ()
 // This part detects whether or not the object is grounded and stores it in a variable
 function OnCollisionEnter (collision : Collision)
 {
-	if(collision.collider.gameObject.layer == 0){
+	if(collision.gameObject.layer == 0){
 		state ++;
 		if(state > 0)
 		{
@@ -37,7 +41,7 @@ function OnCollisionEnter (collision : Collision)
 
 function OnCollisionExit (collision : Collision)
 {
-	if(collision.collider.gameObject.layer == 0){
+	if(collision.gameObject.layer == 0){
 		state --;
 		if(state < 1)
 		{
@@ -52,39 +56,46 @@ function FixedUpdate ()
 {
 	spinAmount = Time.deltaTime * cubeSpeed;
 	
+    // Get the input and set variables for it
+	if(allowInput){
+		jump = Input.GetButtonDown("Jump");
+		horizontal = Input.GetAxisRaw("Horizontal"); 
+		vertical = Input.GetAxisRaw("Vertical");
+		camSet = Input.GetAxisRaw("Fire1");
+	}
+	
+	if(camSet > 0) {
+		switch(direction) {
+    	case("forward"):
+    		lookRot = 0;
+    		break;
+    	case("right"):
+    		lookRot = 90;
+    		break;
+    	case("backward"):
+    		lookRot = 180;
+    		break;
+    	case("left"):
+    		lookRot = 270;
+    		break;
+		}
+	}
+
 	if(rolling){
-		switch(direction){
-			case "left" : RollLeft(); break;
-			case "right" : RollRight(); break;
-			case "forward" : RollForward(); break;
-			case "backward" : RollBackward(); break;
-			default : Debug.Log("asked to roll an invalid direction: " + direction);
-		}
+		Roll(direction);
 	} else if(grounded) { // check for input
-		
-		// Get the input and set variables for it
-		if(allowInput){
-			jump = Input.GetButtonDown ("Jump");
-			vertical = Input.GetAxisRaw("Vertical");
-			horizontal = Input.GetAxisRaw("Horizontal"); 
-		}
-		
-		if(horizontal > 0){    // moving right
-			startRolling("right");
-			castRayGetDestination("right");
-			RollRight();
-		} else if(horizontal < 0){    // moving left
-			startRolling("left");
-			castRayGetDestination("left");
-			RollLeft();
-		} else if(vertical > 0){ // moving forward
-			startRolling("forward");
-			castRayGetDestination("forward");
-			RollForward();
-		} else if(vertical < 0){      // moving back
-			startRolling("backward");
-			castRayGetDestination("backward");
-			RollBackward();
+		if(vertical > 0) { // moving forward
+			startRolling(lookRot == 0 ? "forward" : lookRot == 90 ? "right" : lookRot == 180 ? "backward" : lookRot == 270 ? "left" : "");
+		} else if(vertical < 0) {      // moving back
+			startRolling(lookRot == 0 ? "backward" : lookRot == 90 ? "left" : lookRot == 180 ? "forward" : lookRot == 270 ? "right" : "");
+
+
+		} else if(horizontal > 0) {    // moving right
+			startRolling(lookRot == 0 ? "right" : lookRot == 90 ? "backward" : lookRot == 180 ? "left" : lookRot == 270 ? "forward" : "");
+
+
+		} else if(horizontal < 0) {    // moving left
+			startRolling(lookRot == 0 ? "left" : lookRot == 90 ? "forward" : lookRot == 180 ? "right" : lookRot == 270 ? "backward" : "");
 		}
 
 		// This part is for jumping. I only let jump force be applied every 10 physics frames so
@@ -98,22 +109,21 @@ function FixedUpdate ()
 		}
 	 } // end input checking
  }
- 
- function castRayGetDestination(dir){
-	//var 
- }
 
 function startRolling(dir){
-	if(direction != dir) {									//This is a bit hacky....
+	if(direction != dir) {												//@@@@ This is a bit hacky....
 		transform.rotation = Quaternion.identity;
 		fwdWeight = 0.5;
 		upWeight = -0.5;
 	}
+	
 	direction = dir;
 	rolling = true;
 	allowInput = false;
 	rigidbody.constraints = RigidbodyConstraints.FreezeAll;
 	preRollPosition = transform.position;
+	
+	Roll(dir);
 }
 
 function correctRollingPosition(previousPosition : Vector3, variableDirection){
@@ -132,38 +142,28 @@ function doneRolling(staticDirection){
 	correctRollingPosition(preRollPosition, staticDirection);
 }
 
- function RollForward () {
+function Roll(rollDir : String) {
     var t : float; // temporary variable
-	
-	// store the height at the start of the roll so we can correct it as we roll
-	var startPos : Vector3 = transform.position;
-	
+
     // we rotate around one of the edges of the cube (the stationary one of course)
-    transform.RotateAround(transform.position + (fwdWeight * transform.forward + upWeight * transform.up) * cubeSize, Vector3.right, spinAmount);
-	
-    // add to amount of spin in this update the total rotation
-    totalRotation += spinAmount;
-
-    // check if we have to move to the next edge
-    if (totalRotation >= 90) {
-            // we move to next corner as pivot point
-            totalRotation -= 90;
-            t = fwdWeight;
-            fwdWeight = -upWeight;
-            upWeight = t;
-
-			doneRolling("z");
+    switch(rollDir) {
+    	case("forward"):
+   	 		transform.RotateAround(transform.position + (fwdWeight * transform.forward + upWeight * transform.up) * cubeSize,
+   	 		Vector3.right, spinAmount);
+    		break;
+    	case("backward"):
+      		transform.RotateAround(transform.position + (fwdWeight * -transform.forward + upWeight * transform.up) * cubeSize,
+      		-Vector3.right, spinAmount);
+    		break;
+    	case("right"):
+    		transform.RotateAround(transform.position + (fwdWeight * transform.right + upWeight * transform.up) * cubeSize,
+    		-Vector3.forward, spinAmount);
+    		break;
+    	case("left"):
+    	    transform.RotateAround(transform.position + (fwdWeight * -transform.right + upWeight * transform.up) * cubeSize,
+    	    Vector3.forward, spinAmount);
+    		break;
     }
-}
-
-function RollBackward(){
-    var t : float; // temporary variable
-	
-	// store the height at the start of the roll so we can correct it as we roll
-	var startPos : Vector3 = transform.position;
-	
-    // we rotate around one of the edges of the cube (the stationary one of course)
-    transform.RotateAround(transform.position + (fwdWeight * -1 * transform.forward + upWeight * transform.up) * cubeSize, -1 * Vector3.right, spinAmount);
 	
     // add to amount of spin in this update the total rotation
     totalRotation += spinAmount;
@@ -175,55 +175,7 @@ function RollBackward(){
             t = fwdWeight;
             fwdWeight = -upWeight;
             upWeight = t;
-
-			doneRolling("z");
-    }
-}
-
-function RollLeft() {
-    var t : float; // temporary variable
-	
-	// store the height at the start of the roll so we can correct it as we roll
-	var startPos : Vector3 = transform.position;
-	
-    // we rotate around one of the edges of the cube (the stationary one of course)
-    transform.RotateAround(transform.position + (fwdWeight * -1 * transform.right + upWeight * transform.up) * cubeSize, Vector3.forward, spinAmount);
-	
-    // add to amount of spin in this update the total rotation
-    totalRotation += spinAmount;
-
-    // check if we have to move to the next edge
-    if (totalRotation >= 90) {
-            // we move to next corner as pivot point
-            totalRotation -= 90;
-            t = fwdWeight;
-            fwdWeight = -upWeight;
-            upWeight = t;
-
-			doneRolling("x");
-    }
-}
-
-function RollRight() {
-    var t : float; // temporary variable
-	
-	// store the height at the start of the roll so we can correct it as we roll
-	var startPos : Vector3 = transform.position;
-	
-    // we rotate around one of the edges of the cube (the stationary one of course)
-    transform.RotateAround(transform.position + (fwdWeight * transform.right + upWeight * transform.up) * cubeSize, -1 * Vector3.forward, spinAmount);
-	
-    // add to amount of spin in this update the total rotation
-    totalRotation += spinAmount;
-
-    // check if we have to move to the next edge
-    if (totalRotation >= 90) {
-            // we move to next corner as pivot point
-            totalRotation -= 90;
-            t = fwdWeight;
-            fwdWeight = -upWeight;
-            upWeight = t;
-
-			doneRolling("x");
+            
+            doneRolling(rollDir == "right" || rollDir == "left" ? "x" : "z");
     }
 }
