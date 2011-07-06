@@ -25,25 +25,26 @@ function Awake ()
 // This part detects whether or not the object is grounded and stores it in a variable
 function OnCollisionEnter (collision : Collision)
 {
-    state ++;
-    if(state > 0)
-    {
-        grounded = true;
-    }
-	
-	if(rolling)
-		Debug.Log("hitting: " + collision.collider.gameObject);
+	if(collision.collider.gameObject.layer == 0){
+		state ++;
+		if(state > 0)
+		{
+			grounded = true;
+		}
+	}
 }
 
 
-function OnCollisionExit ()
+function OnCollisionExit (collision : Collision)
 {
-state --;
-    if(state < 1)
-    {
-        grounded = false;
-        state = 0;
-    }
+	if(collision.collider.gameObject.layer == 0){
+		state --;
+		if(state < 1)
+		{
+			grounded = false;
+			state = 0;
+		}
+	}
 }
 
 // This is called every physics frame
@@ -70,15 +71,19 @@ function FixedUpdate ()
 		
 		if(horizontal > 0){    // moving right
 			startRolling("right");
+			castRayGetDestination("right");
 			RollRight();
 		} else if(horizontal < 0){    // moving left
 			startRolling("left");
+			castRayGetDestination("left");
 			RollLeft();
 		} else if(vertical > 0){ // moving forward
 			startRolling("forward");
+			castRayGetDestination("forward");
 			RollForward();
 		} else if(vertical < 0){      // moving back
 			startRolling("backward");
+			castRayGetDestination("backward");
 			RollBackward();
 		}
 
@@ -92,6 +97,10 @@ function FixedUpdate ()
 			jumpLimit = 0;
 		}
 	 } // end input checking
+ }
+ 
+ function castRayGetDestination(dir){
+	//var 
  }
 
 function startRolling(dir){
