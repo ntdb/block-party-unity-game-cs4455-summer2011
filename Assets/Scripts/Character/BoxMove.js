@@ -8,7 +8,7 @@
 // Tyler Meehan
 
 // These variables are for adjusting in the inspector how the object behaves 
-var cubeSpeed = 800;
+var cubeSpeed : float = .5;
 var cubeSize : float = 1;
 var jumpSpeed = 5.000;
 
@@ -49,7 +49,8 @@ function Awake ()
 // This part detects whether or not the object is grounded and stores it in a variable
 function OnCollisionEnter (collision : Collision)
 {
-	if(collision.gameObject.layer != 0){
+	Debug.Log(collision.gameObject.layer);
+	if(collision.gameObject.layer == 8){
 		grounded = true;
 		jumping = false;
 		doubleJumping = false;
@@ -58,7 +59,7 @@ function OnCollisionEnter (collision : Collision)
 
 function OnCollisionExit (collision : Collision)
 {
-	if(collision.gameObject.layer == 0){
+	if(collision.gameObject.layer == 8){
 		grounded = false;
 		groundedCounter = 30;
 	}
@@ -79,6 +80,11 @@ function Update(){
 		doubleJumping = true;
 		rigidbody.velocity.y += jumpSpeed * 1.2;
 	}
+	
+	if(rigidbody.velocity == Vector3(0,0,0)){
+		rigidbody.rotation = Quaternion.identity;
+		grounded = true;
+	}
 }
 
 // This is called every physics frame
@@ -88,30 +94,28 @@ function FixedUpdate ()
 	horizontal = Input.GetAxisRaw("Horizontal"); 
 	vertical = Input.GetAxisRaw("Vertical");
 
-	if(vertical > 0 && (groundedCounter > 0 || grounded)) { // moving forward
-		if(rigidbody.velocity.z < maxSpeed){
+	if(vertical > 0) { // moving forward
+		if(rigidbody.velocity.z < maxSpeed && grounded){
 			rigidbody.AddForceAtPosition(forwardMoveDirection, transform.position, ForceMode.VelocityChange);
 			rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotationY;
 		}
-	} else if(vertical < 0 && (groundedCounter > 0 || grounded)) {      // moving back
-		if(-rigidbody.velocity.z < maxSpeed){
+	} else if(vertical < 0) {      // moving back
+		if(-rigidbody.velocity.z < maxSpeed && grounded){
 			rigidbody.AddForceAtPosition(backMoveDirection, transform.position, ForceMode.VelocityChange);
 			rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotationY;
 		}
-	} else if(horizontal > 0 && (groundedCounter > 0 || grounded)) {    // moving right
-		if(rigidbody.velocity.x < maxSpeed){
+	} else if(horizontal > 0) {    // moving right
+		if(rigidbody.velocity.x < maxSpeed && grounded){
 			rigidbody.AddForceAtPosition(rightMoveDirection, transform.position, ForceMode.VelocityChange);
 			rigidbody.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationY;
 		}
-	} else if(horizontal < 0 && (groundedCounter > 0 || grounded)) {    // moving left
-		if(-rigidbody.velocity.x < maxSpeed){
+	} else if(horizontal < 0) {    // moving left
+		if(-rigidbody.velocity.x < maxSpeed && grounded){
 			rigidbody.AddForceAtPosition(leftMoveDirection, transform.position, ForceMode.VelocityChange);
 			rigidbody.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationY;
 		}
 	} else {
 		rigidbody.constraints = RigidbodyConstraints.FreezeRotationY;
-		if(rigidbody.velocity == Vector3(0,0,0))
-			rigidbody.rotation = Quaternion.identity;
 	}
 	
 	if(groundedCounter > 0) groundedCounter--;
