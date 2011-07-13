@@ -19,14 +19,14 @@ function OnGUI() {
 	//When network is running (server or client) then display the level
 	if (Network.peerType != NetworkPeerType.Disconnected)
 	{
-		if (!playing){
+		if (!playing && Network.isServer){
 			if (GUI.Button(new Rect((Screen.width/2)-50,10,100,30), "Play"))
 			{
-				playing = true;
-				Network.RemoveRPCsInGroup(0);
-				Network.RemoveRPCsInGroup(1);
-				//Load level with incremented prefix
-				networkView.RPC("LoadLevel", RPCMode.AllBuffered, levelName, lastLevelPrefix + 1);
+			playing = true;
+			Network.RemoveRPCsInGroup(0);
+			Network.RemoveRPCsInGroup(1);
+			//Load level with incremented prefix
+			networkView.RPC("LoadLevel", RPCMode.AllBuffered, levelName, lastLevelPrefix + 1);
 			}
 		}
 		if (playing)

@@ -7,13 +7,17 @@
 // Adil Delawalla
 // Tyler Meehan
 
+var player : GameObject;
+private var partner = false;
+var requirePartner = true;
+
 // These variables are for adjusting in the inspector how the object behaves 
 var cubeSpeed : float = .5;
 var cubeSize : float = 1;
 var jumpSpeed = 5.000;
 
 // Other things...
-var Cam : GameObject;
+//var Cam : GameObject;
 
 // These variables are there for use by the script and don't need to be edited
 private var state = 0;
@@ -66,58 +70,78 @@ function OnCollisionExit (collision : Collision)
 }
 
 function Update(){
-	jump = Input.GetButtonDown("Jump");
-	if(jump && (groundedCounter > 0 || grounded) && jumping == false)
-	{
-		rigidbody.velocity.y += jumpSpeed;
-		groundedCounter = 0;
-		jumping = true;
-		doubleJumpCountdown = 5;
-	}
-	
-	if(jump && jumping == true && doubleJumping == false && doubleJumpCountdown == 0)
-	{
-		doubleJumping = true;
-		rigidbody.velocity.y += jumpSpeed * 1.2;
-	}
-	
-	if(rigidbody.velocity == Vector3(0,0,0)){
-		rigidbody.rotation = Quaternion.identity;
-		grounded = true;
+	if(partner || Network.isClient && requirePartner){
+		player = GameObject.FindWithTag("Player");
+		jump = Input.GetButtonDown("Jump");
+		if(jump && (groundedCounter > 0 || grounded) && jumping == false)
+		{
+			player.rigidbody.velocity.y += jumpSpeed;
+			groundedCounter = 0;
+			jumping = true;
+			doubleJumpCountdown = 5;
+		}
+		
+		if(jump && jumping == true && doubleJumping == false && doubleJumpCountdown == 0)
+		{
+			doubleJumping = true;
+			player.rigidbody.velocity.y += jumpSpeed * 1.2;
+		}
+		
+		if(player.rigidbody.velocity == Vector3(0,0,0)){
+			player.rigidbody.rotation = Quaternion.identity;
+			grounded = true;
+		}
 	}
 }
 
 // This is called every physics frame
 function FixedUpdate ()
 {
-    // Get the input and set variables for it
-	horizontal = Input.GetAxisRaw("Horizontal"); 
-	vertical = Input.GetAxisRaw("Vertical");
-
-	if(vertical > 0) { // moving forward
-		if(rigidbody.velocity.z < maxSpeed && grounded){
-			rigidbody.AddForceAtPosition(forwardMoveDirection, transform.position, ForceMode.VelocityChange);
-			rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotationY;
-		}
-	} else if(vertical < 0) {      // moving back
-		if(-rigidbody.velocity.z < maxSpeed && grounded){
-			rigidbody.AddForceAtPosition(backMoveDirection, transform.position, ForceMode.VelocityChange);
-			rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotationY;
-		}
-	} else if(horizontal > 0) {    // moving right
-		if(rigidbody.velocity.x < maxSpeed && grounded){
-			rigidbody.AddForceAtPosition(rightMoveDirection, transform.position, ForceMode.VelocityChange);
-			rigidbody.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationY;
-		}
-	} else if(horizontal < 0) {    // moving left
-		if(-rigidbody.velocity.x < maxSpeed && grounded){
-			rigidbody.AddForceAtPosition(leftMoveDirection, transform.position, ForceMode.VelocityChange);
-			rigidbody.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationY;
-		}
-	} else {
-		rigidbody.constraints = RigidbodyConstraints.FreezeRotationY;
+	if(Network.connections.Length > 0){
+		partner = true;
 	}
-	
-	if(groundedCounter > 0) groundedCounter--;
-	if(doubleJumpCountdown > 0) doubleJumpCountdown--;
+	else
+		partner = false;
+	if(partner || Network.isClient && requirePartner){
+		player = GameObject.FindWithTag("Player");
+		//snap to closest 90 degree increment
+		if(!Input.anyKeyDown){
+			
+		}
+		// Get the input and set variables for it
+		horizontal = Input.GetAxisRaw("Horizontal"); 
+		vertical = Input.GetAxisRaw("Vertical");
+
+		if(vertical > 0) { // moving forward
+			if(player.rigidbody.velocity.z < maxSpeed && grounded){
+				player.rigidbody.AddForceAtPosition(forwardMoveDirection, player.transform.position, ForceMode.VelocityChange);
+				player.rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotationY;
+			}
+		} else if(vertical < 0) {      // moving back
+			if(-player.rigidbody.velocity.z < maxSpeed && grounded){
+				player.rigidbody.AddForceAtPosition(backMoveDirection, player.transform.position, ForceMode.VelocityChange);
+				player.rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotationY;
+			}
+		} else if(horizontal > 0) {    // moving right
+			if(player.rigidbody.velocity.x < maxSpeed && grounded){
+				player.rigidbody.AddForceAtPosition(rightMoveDirection, player.transform.position, ForceMode.VelocityChange);
+				player.rigidbody.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationY;
+			}
+		} else if(horizontal < 0) {    // moving left
+			if(-player.rigidbody.velocity.x < maxSpeed && grounded){
+				player.rigidbody.AddForceAtPosition(leftMoveDirection, player.transform.position, ForceMode.VelocityChange);
+				player.rigidbody.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationY;
+			}
+		} else {
+			player.rigidbody.constraints = RigidbodyConstraints.FreezeRotationY;
+		}
+		
+		if(groundedCounter > 0) groundedCounter--;
+		if(doubleJumpCountdown > 0) doubleJumpCountdown--;
+	}
+}
+function OnGUI(){
+	if(!partner && Network.isServer && requirePartner){
+		GUI.Label( Rect(200,200, Screen.width/2 - 100, Screen.height/2 -100), "Waiting for partner");
+	}
 }
