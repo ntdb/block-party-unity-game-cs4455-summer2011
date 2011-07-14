@@ -72,12 +72,20 @@ function OnCollisionExit (collision : Collision)
 }
 
 function Update(){
+	if(Network.connections.Length > 0){
+		partner = true;
+	}
+	else
+		partner = false;
 	if(partner || Network.isClient || !requirePartner){
 		player = GameObject.FindWithTag("Player");
+		var activeJumpSpeed = jumpSpeed;
+		if(partner)
+			activeJumpSpeed = jumpSpeed / 2;
 		jump = Input.GetButtonDown("Jump");
 		if(jump && (groundedCounter > 0 || grounded) && jumping == false)
 		{
-			player.rigidbody.velocity.y += jumpSpeed;
+			player.rigidbody.velocity.y += activeJumpSpeed;
 			groundedCounter = 0;
 			jumping = true;
 			doubleJumpCountdown = 5;
@@ -86,7 +94,7 @@ function Update(){
 		if(jump && jumping == true && doubleJumping == false && doubleJumpCountdown == 0)
 		{
 			doubleJumping = true;
-			player.rigidbody.velocity.y += jumpSpeed * 1.2;
+			player.rigidbody.velocity.y += activeJumpSpeed * 1.2;
 		}
 		
 		if(player.rigidbody.velocity == Vector3(0,0,0)){
@@ -99,17 +107,8 @@ function Update(){
 // This is called every physics frame
 function FixedUpdate ()
 {
-	if(Network.connections.Length > 0){
-		partner = true;
-	}
-	else
-		partner = false;
 	if(partner || Network.isClient || !requirePartner){
 		player = GameObject.FindWithTag("Player");
-		//snap to closest 90 degree increment
-		if(!Input.anyKeyDown){
-			
-		}
 		// Get the input and set variables for it
 		horizontal = Input.GetAxisRaw("Horizontal"); 
 		vertical = Input.GetAxisRaw("Vertical");
