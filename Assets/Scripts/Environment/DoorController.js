@@ -1,3 +1,12 @@
+// Team: SkyBox Studios
+
+// Team Members:
+// Nathan Bailey
+// Steven Bass
+// Tyler Cochran
+// Adil Delawalla
+// Tyler Meehan
+
 var openHeight : float = -3.3;
 var startHeight : float = 8.25;
 var targetHeight = startHeight;
