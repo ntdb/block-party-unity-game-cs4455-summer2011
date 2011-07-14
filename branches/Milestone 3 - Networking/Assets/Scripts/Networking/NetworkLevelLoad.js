@@ -31,7 +31,7 @@ function OnGUI() {
 		}
 		if (playing)
 		{
-			//GUI.Label(new Rect(10,50,100,30), "Skybox Studios");
+			GUI.Label(new Rect(10,50,200,30), "Skybox Studios");
 			//GUI.Label(new Rect(10,80,100,30), "Adil Delawalla");
 		}
 	}
