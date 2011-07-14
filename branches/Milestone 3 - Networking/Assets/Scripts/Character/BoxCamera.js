@@ -1,3 +1,12 @@
+// Team: SkyBox Studios
+
+// Team Members:
+// Nathan Bailey
+// Steven Bass
+// Tyler Cochran
+// Adil Delawalla
+// Tyler Meehan
+
 var target : Transform;
 private var yRot : float = 0;
 var distance = 10.0;
