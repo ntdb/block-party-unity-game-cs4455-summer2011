@@ -9,7 +9,7 @@
 
 var player : GameObject;
 private var partner = false;
-var requirePartner = true;
+var requirePartner : boolean;
 
 // These variables are for adjusting in the inspector how the object behaves 
 var cubeSpeed : float = .5;
@@ -70,7 +70,7 @@ function OnCollisionExit (collision : Collision)
 }
 
 function Update(){
-	if(partner || Network.isClient && requirePartner){
+	if(partner || Network.isClient || !requirePartner){
 		player = GameObject.FindWithTag("Player");
 		jump = Input.GetButtonDown("Jump");
 		if(jump && (groundedCounter > 0 || grounded) && jumping == false)
@@ -102,7 +102,7 @@ function FixedUpdate ()
 	}
 	else
 		partner = false;
-	if(partner || Network.isClient && requirePartner){
+	if(partner || Network.isClient || !requirePartner){
 		player = GameObject.FindWithTag("Player");
 		//snap to closest 90 degree increment
 		if(!Input.anyKeyDown){
