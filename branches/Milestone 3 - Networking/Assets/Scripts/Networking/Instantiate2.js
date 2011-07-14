@@ -2,7 +2,7 @@ var PlayerPrefab : Transform;
 
 function OnNetworkLoadedLevel() {
 	//Instantiating player
-	if(Network.isServer){
+	if(Network.isClient){
 		Network.Instantiate(PlayerPrefab, transform.position, transform.rotation, 0);	
 	}
 }
