@@ -199,11 +199,11 @@ function ShowGUI() {
 		
 		if(isServer)
 		{
-			GUI.Label(new Rect(Screen.width-250, 10, 250, 30), "Server IP: " + Network.player.ipAddress.ToString() + ":" + Network.player.port.ToString());
+			GUI.Label(new Rect(Screen.width-300, 10, 300, 30), "Server IP: " + Network.player.ipAddress.ToString() + ":" + Network.player.port.ToString());
 		}
 		else if (remoteIP != "127.0.0.1")
 		{
-			GUI.Label(new Rect(Screen.width-250, 10, 250, 30), "Server IP: " + remoteIP.ToString() + ":" + remotePort.ToString());
+			GUI.Label(new Rect(Screen.width-300, 10, 300, 30), "Server IP: " + remoteIP.ToString() + ":" + remotePort.ToString());
 		}
 	}
 

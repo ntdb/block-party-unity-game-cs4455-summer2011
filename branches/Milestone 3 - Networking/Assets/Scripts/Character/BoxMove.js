@@ -11,6 +11,7 @@ var player : GameObject;
 private var partner = false;
 var requirePartner : boolean;
 var myGuiSkin : GUISkin;
+var largeStyle : GUIStyle;
 
 // These variables are for adjusting in the inspector how the object behaves 
 var cubeSpeed : float = .5;
@@ -144,6 +145,6 @@ function FixedUpdate ()
 function OnGUI(){
 	GUI.skin = myGuiSkin;
 	if(!partner && Network.isServer && requirePartner){
-		GUI.Label( Rect(200,200, Screen.width/2 - 100, Screen.height/2 -100), "Waiting for partner");
+		GUI.Label( Rect((Screen.width/2)-220,(Screen.height/2)-80, Screen.width, Screen.height), "Waiting for partner", largeStyle);
 	}
 }
