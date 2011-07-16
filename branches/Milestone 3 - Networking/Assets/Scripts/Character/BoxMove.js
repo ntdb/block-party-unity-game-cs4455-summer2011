@@ -39,18 +39,13 @@ private var forwardMoveDirection;
 private var backMoveDirection;
 private var leftMoveDirection;
 private var rightMoveDirection;
-var maxSpeed = 2;
+static var maxSpeed = 2;
 private var doubleJumping : boolean = false;
 private var doubleJumpCountdown = 0;
 
 // Don't let the Physics Engine rotate this physics object so it doesn't fall over when running
 function Awake ()
-{ 
-    forwardMoveDirection = Vector3(0, 0, 1.2);
-	backMoveDirection = -forwardMoveDirection;
-	leftMoveDirection = Vector3(-1.2, 0, 0);
-	rightMoveDirection = -leftMoveDirection;
-}
+{}
 
 // This part detects whether or not the object is grounded and stores it in a variable
 function OnCollisionEnter (collision : Collision)
@@ -112,8 +107,11 @@ function FixedUpdate ()
 		// Get the input and set variables for it
 		horizontal = Input.GetAxisRaw("Horizontal"); 
 		vertical = Input.GetAxisRaw("Vertical");
-
-		if(vertical > 0) { // moving forward
+		
+		if (grounded) {
+			UnitMove.Move(player, maxSpeed, vertical, horizontal);
+		}
+		/*if(vertical > 0) { // moving forward
 			if(player.rigidbody.velocity.z < maxSpeed && grounded){
 				player.rigidbody.AddForceAtPosition(forwardMoveDirection, player.transform.position, ForceMode.VelocityChange);
 				player.rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotationY;
@@ -135,7 +133,7 @@ function FixedUpdate ()
 			}
 		} else {
 			player.rigidbody.constraints = RigidbodyConstraints.FreezeRotationY;
-		}
+		}*/
 		
 		if(groundedCounter > 0) groundedCounter--;
 		if(doubleJumpCountdown > 0) doubleJumpCountdown--;
