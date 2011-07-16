@@ -13,11 +13,5 @@ var child : Transform;
 function OnCollisionEnter(other : Collision){
 	if(other.collider.tag == "Player" && Network.isServer){
 		targetGO.GetComponent("DoorController").OpenDoor();
-		networkView.RPC("buttonPress", RPCMode.AllBuffered);
 	}
-}
-
-@RPC
-function buttonPress(){
-	child.position.y = transform.position.y;
 }
