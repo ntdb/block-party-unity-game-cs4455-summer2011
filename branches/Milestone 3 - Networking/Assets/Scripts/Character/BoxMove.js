@@ -50,7 +50,7 @@ function Awake ()
 // This part detects whether or not the object is grounded and stores it in a variable
 function OnCollisionEnter (collision : Collision)
 {
-	Debug.Log(collision.gameObject.layer);
+	//Debug.Log(collision.gameObject.layer);
 	if(collision.gameObject.layer == 8){
 		grounded = true;
 		jumping = false;
