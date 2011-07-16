@@ -13,14 +13,18 @@ var pushHeight : float = 1.6;
 private var targetHeight : float = startHeight;
 
 function OnCollisionEnter(info : Collision){
-	if(info.collider.tag == "Player" && info.transform.position.y > transform.position.y + 1){
-		targetHeight = pushHeight;
+	if(Network.isServer){
+		if(info.collider.tag == "Player" && info.transform.position.y > transform.position.y + 1){
+			targetHeight = pushHeight;
+		}
 	}
 }
 
 function OnCollisionExit(info : Collision){
-	if(info.collider.tag == "Player"){
-		targetHeight = startHeight;
+	if(Network.isServer){
+		if(info.collider.tag == "Player"){
+			targetHeight = startHeight;
+		}
 	}
 }
 
