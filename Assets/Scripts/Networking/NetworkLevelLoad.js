@@ -28,6 +28,7 @@ function OnGUI() {
 	if (Network.peerType != NetworkPeerType.Disconnected)
 	{
 		if (!playing && Network.isServer){
+			
 			if (GUI.Button(new Rect((Screen.width/2)-50,10,100,30), "Play"))
 			{
 			playing = true;
@@ -37,11 +38,12 @@ function OnGUI() {
 			networkView.RPC("LoadLevel", RPCMode.AllBuffered, levelName, lastLevelPrefix + 1);
 			}
 		}
-		if (playing)
+		else if (playing)
 		{
-			GUI.Label(new Rect(10,50,200,30), "Skybox Studios");
+			GUI.Label(new Rect(10,50,200,50), "Skybox Studios");
 			//GUI.Label(new Rect(10,80,100,30), "Adil Delawalla");
 		}
+		GUI.Label(new Rect(Screen.width-115,50, 115, 50), "Players: " + (Network.connections.Length+1));
 	}
 }
 
