@@ -11,7 +11,10 @@ var targetGO : GameObject;
 var child : Transform;
 
 function OnCollisionEnter(other : Collision){
-	if(other.collider.tag == "Player" && Network.isServer){
-		targetGO.GetComponent("DoorController").OpenDoor();
+	if(other.collider.tag == "Player"){
+		if(Network.isServer){
+			targetGO.GetComponent("DoorController").OpenDoor();
+			child.position.y = transform.position.y;
+		}
 	}
 }
