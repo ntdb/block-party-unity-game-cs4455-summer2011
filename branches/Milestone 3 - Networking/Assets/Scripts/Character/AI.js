@@ -167,11 +167,24 @@ function cost (state : Vector4) {
 
 function createGraph () {
 	graph = new Hashtable();
+	var rayhit : RaycastHit;
+	var layerMask = ~(1 << 9);
 	for (var i : float = lcornerbound.x * 5; i <= rcornerbound.x * 5; i ++) {
 		for (var j : float = lcornerbound.y * 5; j <= rcornerbound.y * 5; j ++) {
-			graph.Add(Vector2(i / 5,j / 5), "");
+			Physics.Raycast(Vector3(i / 5, 50, j / 5), -Vector3.up, rayhit, Mathf.Infinity, layerMask);
+			if (!Physics.Raycast(rayhit.point + (Vector3.up * trans.localScale.y / 2), Vector3.forward,  trans.localScale.z / 2, layerMask) &&
+				!Physics.Raycast(rayhit.point + (Vector3.up * trans.localScale.y / 2), -Vector3.forward,  trans.localScale.z / 2, layerMask) &&
+				!Physics.Raycast(rayhit.point + (Vector3.up * trans.localScale.y / 2), Vector3.right,  trans.localScale.x / 2, layerMask) &&
+				!Physics.Raycast(rayhit.point + (Vector3.up * trans.localScale.y / 2), -Vector3.right,  trans.localScale.x / 2, layerMask)) {
+				graph.Add(Vector2(i / 5,j / 5), "");
+			}
 		}
 	}
+	print(Physics.Raycast(Vector3(-28.4, 50, 21.8), -Vector3.up, rayhit, Mathf.Infinity, layerMask));
+	print(!Physics.Raycast(rayhit.point + (Vector3.up * trans.localScale.y / 2), Vector3.forward,  trans.localScale.z / 2, layerMask));
+	print(!Physics.Raycast(rayhit.point + (Vector3.up * trans.localScale.y / 2), -Vector3.forward,  trans.localScale.z / 2, layerMask));
+	print(!Physics.Raycast(rayhit.point + (Vector3.up * trans.localScale.y / 2), Vector3.right,  trans.localScale.x / 2, layerMask));
+	print(!Physics.Raycast(rayhit.point + (Vector3.up * trans.localScale.y / 2), -Vector3.right,  trans.localScale.x / 2, layerMask));
 	/*print(graph.Contains(Vector2(-50.0, -50.0)));
 	print(graph.Contains(Vector2(-50.0, -49.4)));
 	print(graph.Contains(Vector2(-20.0, 0.0)));
@@ -231,6 +244,7 @@ function FixedUpdate ()
 	if (players.length == 1) {
 		player2 = players[0].transform;
 	} else {
+		print("herro!");
 		player2 = players[1].transform;
 	}
 	/*print("1 " + Vector3.Distance(player1.position, trans.position));
