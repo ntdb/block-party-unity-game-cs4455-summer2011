@@ -139,7 +139,7 @@ function ShowGUI() {
 		if (GUI.Button(new Rect(10,200,130,30), "Start Server"))
 		{
 			var useNat = !Network.HavePublicAddress();
-			Network.InitializeServer(2, serverPort, useNat);
+			Network.InitializeServer(1, serverPort, useNat);
 			MasterServer.updateRate = 3;
 			MasterServer.RegisterHost(gameName, "stuff", "profas chat test");
 			isServer = true;
