@@ -84,12 +84,11 @@ function Update(){
 	else
 		partner = false;
 	if(partner || Network.isClient || !requirePartner){
-		var activeJumpSpeed = jumpSpeed;
 			
 		jump = Input.GetButtonDown("Jump");
 		if(jump && (groundedCounter > 0 || grounded) && jumping == false)
 		{
-			rigidbody.velocity.y += activeJumpSpeed;
+			rigidbody.velocity.y += jumpSpeed;
 			groundedCounter = 0;
 			jumping = true;
 			doubleJumpCountdown = 5;
@@ -98,7 +97,7 @@ function Update(){
 		if(jump && jumping == true && doubleJumping == false && doubleJumpCountdown == 0)
 		{
 			doubleJumping = true;
-			rigidbody.velocity.y += activeJumpSpeed * 1.2;
+			rigidbody.velocity.y += jumpSpeed * 1.2;
 		}
 		
 		if(rigidbody.velocity == Vector3(0,0,0)){
