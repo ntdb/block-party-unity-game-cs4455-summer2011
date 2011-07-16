@@ -39,13 +39,24 @@ private var forwardMoveDirection;
 private var backMoveDirection;
 private var leftMoveDirection;
 private var rightMoveDirection;
-static var maxSpeed = 2;
+static var maxSpeed = 5;
 private var doubleJumping : boolean = false;
 private var doubleJumpCountdown = 0;
 
 // Don't let the Physics Engine rotate this physics object so it doesn't fall over when running
 function Awake ()
-{}
+{
+	if(!networkView.isMine){
+		enabled = false;
+	}
+	else{
+		forwardMoveDirection = Vector3(0, 0, 1.2);
+		backMoveDirection = Vector3(0, 0, -1.2);
+		leftMoveDirection = Vector3(-1.2, 0, 0);
+		rightMoveDirection = Vector3(1.2, 0, 0);
+	}
+
+}
 
 // This part detects whether or not the object is grounded and stores it in a variable
 function OnCollisionEnter (collision : Collision)
@@ -73,14 +84,12 @@ function Update(){
 	else
 		partner = false;
 	if(partner || Network.isClient || !requirePartner){
-		player = GameObject.FindWithTag("Player");
 		var activeJumpSpeed = jumpSpeed;
-		if(partner)
-			activeJumpSpeed = jumpSpeed / 2;
+			
 		jump = Input.GetButtonDown("Jump");
 		if(jump && (groundedCounter > 0 || grounded) && jumping == false)
 		{
-			player.rigidbody.velocity.y += activeJumpSpeed;
+			rigidbody.velocity.y += activeJumpSpeed;
 			groundedCounter = 0;
 			jumping = true;
 			doubleJumpCountdown = 5;
@@ -89,11 +98,11 @@ function Update(){
 		if(jump && jumping == true && doubleJumping == false && doubleJumpCountdown == 0)
 		{
 			doubleJumping = true;
-			player.rigidbody.velocity.y += activeJumpSpeed * 1.2;
+			rigidbody.velocity.y += activeJumpSpeed * 1.2;
 		}
 		
-		if(player.rigidbody.velocity == Vector3(0,0,0)){
-			player.rigidbody.rotation = Quaternion.identity;
+		if(rigidbody.velocity == Vector3(0,0,0)){
+			rigidbody.rotation = Quaternion.identity;
 			grounded = true;
 		}
 	}
@@ -103,37 +112,36 @@ function Update(){
 function FixedUpdate ()
 {
 	if(partner || Network.isClient || !requirePartner){
-		player = GameObject.FindWithTag("Player");
 		// Get the input and set variables for it
 		horizontal = Input.GetAxisRaw("Horizontal"); 
 		vertical = Input.GetAxisRaw("Vertical");
 		
-		if (grounded) {
+		/*if (grounded) {
 			UnitMove.Move(player, maxSpeed, vertical, horizontal);
-		}
-		/*if(vertical > 0) { // moving forward
-			if(player.rigidbody.velocity.z < maxSpeed && grounded){
-				player.rigidbody.AddForceAtPosition(forwardMoveDirection, player.transform.position, ForceMode.VelocityChange);
-				player.rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotationY;
+		}*/
+		if(vertical > 0) { // moving forward
+			if(rigidbody.velocity.z < maxSpeed && grounded){
+				rigidbody.AddForceAtPosition(forwardMoveDirection, transform.position, ForceMode.VelocityChange);
+				rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotationY;
 			}
 		} else if(vertical < 0) {      // moving back
-			if(-player.rigidbody.velocity.z < maxSpeed && grounded){
-				player.rigidbody.AddForceAtPosition(backMoveDirection, player.transform.position, ForceMode.VelocityChange);
-				player.rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotationY;
+			if(-rigidbody.velocity.z < maxSpeed && grounded){
+				rigidbody.AddForceAtPosition(backMoveDirection, transform.position, ForceMode.VelocityChange);
+				rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotationY;
 			}
 		} else if(horizontal > 0) {    // moving right
-			if(player.rigidbody.velocity.x < maxSpeed && grounded){
-				player.rigidbody.AddForceAtPosition(rightMoveDirection, player.transform.position, ForceMode.VelocityChange);
-				player.rigidbody.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationY;
+			if(rigidbody.velocity.x < maxSpeed && grounded){
+				rigidbody.AddForceAtPosition(rightMoveDirection, transform.position, ForceMode.VelocityChange);
+				rigidbody.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationY;
 			}
 		} else if(horizontal < 0) {    // moving left
-			if(-player.rigidbody.velocity.x < maxSpeed && grounded){
-				player.rigidbody.AddForceAtPosition(leftMoveDirection, player.transform.position, ForceMode.VelocityChange);
-				player.rigidbody.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationY;
+			if(-rigidbody.velocity.x < maxSpeed && grounded){
+				rigidbody.AddForceAtPosition(leftMoveDirection, transform.position, ForceMode.VelocityChange);
+				rigidbody.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationY;
 			}
 		} else {
-			player.rigidbody.constraints = RigidbodyConstraints.FreezeRotationY;
-		}*/
+			rigidbody.constraints = RigidbodyConstraints.FreezeRotationY;
+		}
 		
 		if(groundedCounter > 0) groundedCounter--;
 		if(doubleJumpCountdown > 0) doubleJumpCountdown--;
