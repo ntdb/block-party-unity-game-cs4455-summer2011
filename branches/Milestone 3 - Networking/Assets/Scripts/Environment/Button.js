@@ -16,6 +16,7 @@ function OnCollisionEnter(info : Collision){
 	if(Network.isServer){
 		if(info.collider.tag == "Player" && info.transform.position.y > transform.position.y + 1){
 			targetHeight = pushHeight;
+			Debug.Log("Entering collision");
 		}
 	}
 }
@@ -24,6 +25,7 @@ function OnCollisionExit(info : Collision){
 	if(Network.isServer){
 		if(info.collider.tag == "Player"){
 			targetHeight = startHeight;
+			Debug.Log("Exiting collision");
 		}
 	}
 }
