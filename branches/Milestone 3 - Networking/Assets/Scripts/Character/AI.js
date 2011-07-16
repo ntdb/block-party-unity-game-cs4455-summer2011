@@ -75,7 +75,7 @@ function AI () {
 	//print("Begin");
 	//print(end);
 	//print(search(graph, AIposition));
-	print(player1.position);
+	//print(player1.position);
 	while (Vector3.Distance(player1.position, Vector3(end.x, player1.position.y, end.y)) < triggerDistance && 
 			Vector3.Distance(player2.position, Vector3(end.x, player2.position.y, end.y)) < triggerDistance && 
 			queue.length != 0) {
