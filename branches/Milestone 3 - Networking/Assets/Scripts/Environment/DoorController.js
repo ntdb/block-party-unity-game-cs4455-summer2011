@@ -11,8 +11,17 @@ var openHeight : float = -3.3;
 var startHeight : float = 8.25;
 var targetHeight = startHeight;
 private var triggered : boolean = false;
+var doorIsOpened : boolean = false;
 
 function OpenDoor(){
+	doorIsOpened = true;
+	if (Network.isServer){
+		networkView.RPC("RPCOpenDoor", RPCMode.AllBuffered);
+	}
+}
+
+@RPC
+function RPCOpenDoor(){
 	targetHeight = openHeight;
 }
 
