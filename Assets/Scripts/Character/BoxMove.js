@@ -25,21 +25,14 @@ var jumpSpeed = 5.000;
 private var state = 0;
 var groundedCounter = 10000;
 private var grounded : boolean = true;
+private var canMove : boolean = true;
 private var jumping : boolean = false;
-private var fwdWeight : float = 0.5;
-private var upWeight : float = -0.5;
-private var totalRotation : float = 0; // determines if we're past the 90 degrees when rolling
-private var rolling : boolean = false;
-private var allowInput : boolean = true;
-private var direction = "";
-private var preRollPosition : Vector3;
-private var spinAmount : float;
 var lookRot : float;
 private var forwardMoveDirection;
 private var backMoveDirection;
 private var leftMoveDirection;
 private var rightMoveDirection;
-static var maxSpeed = 5;
+static var maxSpeed = 7;
 private var doubleJumping : boolean = false;
 private var doubleJumpCountdown = 0;
 
@@ -61,11 +54,13 @@ function Awake ()
 // This part detects whether or not the object is grounded and stores it in a variable
 function OnCollisionEnter (collision : Collision)
 {
-	//Debug.Log(collision.gameObject.layer);
 	if(collision.gameObject.layer == 8){
 		grounded = true;
 		jumping = false;
 		doubleJumping = false;
+		canMove = true;
+	} else if(collision.gameObject.layer == 9 && jumping){
+		canMove = false;
 	}
 }
 
@@ -74,6 +69,8 @@ function OnCollisionExit (collision : Collision)
 	if(collision.gameObject.layer == 8){
 		grounded = false;
 		groundedCounter = 30;
+	} else if(collision.gameObject.layer == 9){
+		canMove = true;
 	}
 }
 
@@ -115,26 +112,23 @@ function FixedUpdate ()
 		horizontal = Input.GetAxisRaw("Horizontal"); 
 		vertical = Input.GetAxisRaw("Vertical");
 		
-		/*if (grounded) {
-			UnitMove.Move(player, maxSpeed, vertical, horizontal);
-		}*/
 		if(vertical > 0) { // moving forward
-			if(rigidbody.velocity.z < maxSpeed && grounded){
+			if(rigidbody.velocity.z < maxSpeed && canMove){
 				rigidbody.AddForceAtPosition(forwardMoveDirection, transform.position, ForceMode.VelocityChange);
 				rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotationY;
 			}
 		} else if(vertical < 0) {      // moving back
-			if(-rigidbody.velocity.z < maxSpeed && grounded){
+			if(-rigidbody.velocity.z < maxSpeed && canMove){
 				rigidbody.AddForceAtPosition(backMoveDirection, transform.position, ForceMode.VelocityChange);
 				rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotationY;
 			}
 		} else if(horizontal > 0) {    // moving right
-			if(rigidbody.velocity.x < maxSpeed && grounded){
+			if(rigidbody.velocity.x < maxSpeed && canMove){
 				rigidbody.AddForceAtPosition(rightMoveDirection, transform.position, ForceMode.VelocityChange);
 				rigidbody.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationY;
 			}
 		} else if(horizontal < 0) {    // moving left
-			if(-rigidbody.velocity.x < maxSpeed && grounded){
+			if(-rigidbody.velocity.x < maxSpeed && canMove){
 				rigidbody.AddForceAtPosition(leftMoveDirection, transform.position, ForceMode.VelocityChange);
 				rigidbody.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationY;
 			}
