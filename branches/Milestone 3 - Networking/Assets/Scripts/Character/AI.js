@@ -76,8 +76,8 @@ function AI () {
 	//print(end);
 	//print(search(graph, AIposition));
 	//print(player1.position);
-	while (Vector3.Distance(player1.position, Vector3(end.x, player1.position.y, end.y)) < triggerDistance && 
-			Vector3.Distance(player2.position, Vector3(end.x, player2.position.y, end.y)) < triggerDistance && 
+	while ((Vector3.Distance(player1.position, Vector3(end.x, player1.position.y, end.y)) < triggerDistance || 
+			Vector3.Distance(player2.position, Vector3(end.x, player2.position.y, end.y)) < triggerDistance) && 
 			queue.length != 0) {
 		end = queue.shift();
 		/*print(end);
@@ -180,11 +180,11 @@ function createGraph () {
 			}
 		}
 	}
-	print(Physics.Raycast(Vector3(-28.4, 50, 21.8), -Vector3.up, rayhit, Mathf.Infinity, layerMask));
+	/*print(Physics.Raycast(Vector3(-28.4, 50, 21.8), -Vector3.up, rayhit, Mathf.Infinity, layerMask));
 	print(!Physics.Raycast(rayhit.point + (Vector3.up * trans.localScale.y / 2), Vector3.forward,  trans.localScale.z / 2, layerMask));
 	print(!Physics.Raycast(rayhit.point + (Vector3.up * trans.localScale.y / 2), -Vector3.forward,  trans.localScale.z / 2, layerMask));
 	print(!Physics.Raycast(rayhit.point + (Vector3.up * trans.localScale.y / 2), Vector3.right,  trans.localScale.x / 2, layerMask));
-	print(!Physics.Raycast(rayhit.point + (Vector3.up * trans.localScale.y / 2), -Vector3.right,  trans.localScale.x / 2, layerMask));
+	print(!Physics.Raycast(rayhit.point + (Vector3.up * trans.localScale.y / 2), -Vector3.right,  trans.localScale.x / 2, layerMask));*/
 	/*print(graph.Contains(Vector2(-50.0, -50.0)));
 	print(graph.Contains(Vector2(-50.0, -49.4)));
 	print(graph.Contains(Vector2(-20.0, 0.0)));
@@ -244,15 +244,17 @@ function FixedUpdate ()
 	if (players.length == 1) {
 		player2 = players[0].transform;
 	} else {
-		print("herro!");
+		//print("herro!");
 		player2 = players[1].transform;
 	}
 	/*print("1 " + Vector3.Distance(player1.position, trans.position));
 	print("2 " + Vector3.Distance(player2.position, trans.position));
 	print("3 " + triggerDistance);*/
     if (Vector3.Distance(player1.position, trans.position) < triggerDistance || Vector3.Distance(player2.position, trans.position) < triggerDistance) {
+		//print("Trigger");
 		if (!running) {AI();}
-		
+		//print(vertical);
+		//print(horizontal);
 		UnitMove.Move(collectible, maxSpeed, vertical, horizontal);
 		
 		/*if(vertical > 0) { // moving forward
