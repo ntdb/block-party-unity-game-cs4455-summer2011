@@ -76,8 +76,8 @@ function AI () {
 	//print(end);
 	//print(search(graph, AIposition));
 	//print(player1.position);
-	while (Vector3.Distance(player1.position, Vector3(end.x, player1.position.y, end.y)) < triggerDistance && 
-			Vector3.Distance(player2.position, Vector3(end.x, player2.position.y, end.y)) < triggerDistance && 
+	while ((Vector3.Distance(player1.position, Vector3(end.x, player1.position.y, end.y)) < triggerDistance || 
+			Vector3.Distance(player2.position, Vector3(end.x, player2.position.y, end.y)) < triggerDistance) && 
 			queue.length != 0) {
 		end = queue.shift();
 		/*print(end);
@@ -168,7 +168,7 @@ function cost (state : Vector4) {
 function createGraph () {
 	graph = new Hashtable();
 	var rayhit : RaycastHit;
-	var layerMask = ~(1 << 9);
+	var layerMask = ~(1 << 10);
 	for (var i : float = lcornerbound.x * 5; i <= rcornerbound.x * 5; i ++) {
 		for (var j : float = lcornerbound.y * 5; j <= rcornerbound.y * 5; j ++) {
 			Physics.Raycast(Vector3(i / 5, 50, j / 5), -Vector3.up, rayhit, Mathf.Infinity, layerMask);
@@ -180,11 +180,11 @@ function createGraph () {
 			}
 		}
 	}
-	print(Physics.Raycast(Vector3(-28.4, 50, 21.8), -Vector3.up, rayhit, Mathf.Infinity, layerMask));
+	/*print(Physics.Raycast(Vector3(-28.4, 50, 21.8), -Vector3.up, rayhit, Mathf.Infinity, layerMask));
 	print(!Physics.Raycast(rayhit.point + (Vector3.up * trans.localScale.y / 2), Vector3.forward,  trans.localScale.z / 2, layerMask));
 	print(!Physics.Raycast(rayhit.point + (Vector3.up * trans.localScale.y / 2), -Vector3.forward,  trans.localScale.z / 2, layerMask));
 	print(!Physics.Raycast(rayhit.point + (Vector3.up * trans.localScale.y / 2), Vector3.right,  trans.localScale.x / 2, layerMask));
-	print(!Physics.Raycast(rayhit.point + (Vector3.up * trans.localScale.y / 2), -Vector3.right,  trans.localScale.x / 2, layerMask));
+	print(!Physics.Raycast(rayhit.point + (Vector3.up * trans.localScale.y / 2), -Vector3.right,  trans.localScale.x / 2, layerMask));*/
 	/*print(graph.Contains(Vector2(-50.0, -50.0)));
 	print(graph.Contains(Vector2(-50.0, -49.4)));
 	print(graph.Contains(Vector2(-20.0, 0.0)));
@@ -204,19 +204,53 @@ function search(array, item : Vector2) {
 }
 
 function sort (array : Array) {
-	//print(array);
-	var temp : Vector4;
-	for (i = 1; i <= array.length; i ++) {
-		for (j = 0; j < array.length - i; j ++) {
-			if (cost(array[j]) > cost(array[j + 1])) {
-				temp = array[j];
-				array[j] = array[j + 1];
-				array[j + 1] = temp;
+	//print("1 " + array);
+	var arr : Vector4[] = array.ToBuiltin(Vector4);
+	arr = msort(arr, 0, array.length - 1);
+	array = new Array (arr);
+	//print("2 " + array);
+	return array;
+}
+
+function msort (array : Vector4[], begin : int, end : int) : Vector4[] {
+	/*print("Array: " + new Array (array));
+	print("Begin: " + begin);
+	print("End: " + end);*/
+	if (begin < end) {
+		var index = begin;
+		var index2 = begin + (end - begin) / 2 + 1;
+		array = msort(array, begin, begin + (end - begin) / 2);
+		//print("Array 1: " + new Array(array));
+		array = msort(array, index2, end);
+		//print("Array 2: " + new Array(array));
+		var temp : Vector4[] = new Vector4[array.length];
+		temp = array;
+		for (i = begin; i <= end; i ++) {
+			if (index == -1) {
+				temp[i] = array[index2];
+				index2++;
+			} else if (index2 == -1) {
+				temp[i] = array[index];
+				index++;
+			} else if (cost(array[index]) <= cost(array[index2])) {
+				temp[i] = array[index];
+				if (index < begin + (end - begin) / 2) {
+					index++;
+				} else {
+					index = -1;
+				}
+			} else {
+				temp[i] = array[index2];
+				if (index2 < end) {
+					index2 ++;
+				} else {
+					index2 = -1;
+				}
 			}
+			//print("Temp: " + new Array(temp));
 		}
+		array = temp;
 	}
-	/*print(array);
-	Debug.Break();*/
 	return array;
 }
 
