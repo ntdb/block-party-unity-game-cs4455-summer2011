@@ -8,7 +8,8 @@
 // Tyler Meehan
 
 var myGuiSkin : GUISkin;
-var levelName : String;
+var level1Name : String;
+var level2Name : String;
 
 //Keep track of the last level prefix (increment each time a new level loads)
 private var lastLevelPrefix = 0;
@@ -35,7 +36,7 @@ function OnGUI() {
 			Network.RemoveRPCsInGroup(0);
 			Network.RemoveRPCsInGroup(1);
 			//Load level with incremented prefix
-			networkView.RPC("LoadLevel", RPCMode.AllBuffered, levelName, lastLevelPrefix + 1);
+			networkView.RPC("LoadLevel", RPCMode.AllBuffered, level1Name, lastLevelPrefix + 1);
 			}
 		}
 		else if (playing)
@@ -78,6 +79,11 @@ function LoadLevel(level : String, levelPrefix : int) {
 function OnDisconnectedFromServer() {
 	playing = false;
 	Application.LoadLevel("EmptyScene");
+}
+
+function LoadNextLevel(){
+	if(lastLevelPrefix == 1)
+		networkView.RPC("LoadLevel", RPCMode.AllBuffered, level2Name, lastLevelPrefix + 1);
 }
 
 @script RequireComponent(NetworkView)
