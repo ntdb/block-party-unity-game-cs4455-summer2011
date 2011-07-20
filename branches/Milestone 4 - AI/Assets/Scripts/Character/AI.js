@@ -69,19 +69,20 @@ function AI () {
 	//print(AIposition);
 	//var begin : Vector2;
 	var end : Vector4 = Vector4(AIposition.x, AIposition.y, 0, 0);
-	var queue = new Array();
+	var queue : PriorityQueue = new PriorityQueue(player1, player2);
 	var visited = new Hashtable();
 	queue.push(end);
-	//print("Begin");
+	//print("Begin: ");
+	//queue.ret();
 	//print(end);
 	//print(search(graph, AIposition));
 	//print(player1.position);
 	while ((Vector3.Distance(player1.position, Vector3(end.x, player1.position.y, end.y)) < triggerDistance || 
 			Vector3.Distance(player2.position, Vector3(end.x, player2.position.y, end.y)) < triggerDistance) && 
-			queue.length != 0) {
+			queue.size() != 0) {
 		end = queue.shift();
-		/*print(end);
-		print(Vector3.Distance(player.position, Vector3(end.x, player.position.y, end.y)));
+		//print("Select: " + end);
+		/*print(Vector3.Distance(player.position, Vector3(end.x, player.position.y, end.y)));
 		print(queue);*/
 		if (Mathf.Round(end.x * 5) / 5 == Mathf.Round(AIposition.x * 5 - 1) / 5 && Mathf.Round(end.y * 5) / 5 == Mathf.Round(AIposition.y * 5) / 5) {
 			end.w = 3;
@@ -98,6 +99,10 @@ function AI () {
 		}
 		if (!visited.Contains(Vector2(end.x, end.y))) {
 			visited.Add(Vector2(end.x, end.y), null);
+			//print(graph.Contains(Vector2(Mathf.Round(end.x * 5 - 1) / 5, end.y)));
+			//print(graph.Contains(Vector2(Mathf.Round(end.x * 5 + 1) / 5, end.y)));
+			//print(graph.Contains(Vector2(end.x, Mathf.Round(end.y * 5 - 1) / 5)));
+			//print(graph.Contains(Vector2(end.x, Mathf.Round(end.y * 5 + 1) / 5)));
 			if (graph.Contains(Vector2(Mathf.Round(end.x * 5 - 1) / 5, end.y)) &&
 				!visited.Contains(Vector2(Mathf.Round(end.x * 5 - 1) / 5, end.y))) {
 				queue.push(Vector4(Mathf.Round(end.x * 5 - 1) / 5, end.y, end.z + 0.2, end.w));
@@ -119,10 +124,12 @@ function AI () {
 				//print("hello!4");
 			}
 		}
-		queue = sort(queue);
-		//print(queue);
+		//queue = sort(queue);
+		//print("Queue: ");
+		//queue.ret();
 	}
-	//print("End");
+	//print("End: ");
+	//queue.ret();
 	if (end.w == 3) {
 		horizontal = -1;
 		vertical = 0;
@@ -156,15 +163,6 @@ function AI () {
 	running = false;
 }
 
-function cost (state : Vector4) {
-	/*print(state);
-	print(Vector3.Distance(player.position, Vector3(state.x, state.y, player.position.y)));
-	print(-Mathf.Pow(Vector3.Distance(player.position, Vector3(state.x, player.position.y, state.y)) + state.z * (4 / 3), 2));*/
-	var player1cost : float = -Mathf.Pow(Vector3.Distance(player1.position, Vector3(state.x, player1.position.y, state.y)) + state.z * (4 / 3), 2);
-	var player2cost : float = -Mathf.Pow(Vector3.Distance(player2.position, Vector3(state.x, player2.position.y, state.y)) + state.z * (4 / 3), 2);
-	return ((player1cost > player2cost) ? player1cost : player2cost);
-}
-
 function createGraph () {
 	graph = new Hashtable();
 	var rayhit : RaycastHit;
@@ -194,7 +192,63 @@ function createGraph () {
 	print(graph.Contains(Vector2(-20.0, 0.2)));*/
 }
 
-function search(array, item : Vector2) {
+class PriorityQueue {
+	private var array : Array;
+	private var player1 : Transform;
+	private var player2 : Transform;
+	
+	function PriorityQueue(player1 : Transform, player2 : Transform) {
+		array = new Array();
+		this.player1 = player1;
+		this.player2 = player2;
+	}
+	
+	private function cost (state : Vector4) {
+		/*print(state);
+		print(Vector3.Distance(player.position, Vector3(state.x, state.y, player.position.y)));
+		print(-Mathf.Pow(Vector3.Distance(player.position, Vector3(state.x, player.position.y, state.y)) + state.z * (4 / 3), 2));*/
+		var player1cost : float = -Mathf.Pow(Vector3.Distance(player1.position, Vector3(state.x, player1.position.y, state.y)) + state.z * (4 / 3), 2);
+		var player2cost : float = -Mathf.Pow(Vector3.Distance(player2.position, Vector3(state.x, player2.position.y, state.y)) + state.z * (4 / 3), 2);
+		return ((player1cost > player2cost) ? player1cost : player2cost);
+	}
+	
+	function push(v : Vector4) {
+		//Debug.Log(v);
+		var c = cost(v);
+		//Debug.Log(c);
+		var tc;
+		var i = -1;
+		for (i = array.length - 1; i >= 0; i--) {
+			tc = cost(array[i]);
+			//Debug.Log(tc);
+			if (tc > c) {
+				array[i + 1] = array[i];
+			} else if (tc <= c) {
+				array[i + 1] = v;
+				break;
+			}
+		}
+		if (i == -1) {
+			array[0] = v;
+		}
+	}
+	
+	function shift() {
+		return array.shift();
+	}
+	
+	function size() {
+		return array.length;
+	}
+	
+	function ret() {
+		Debug.Log(array);
+		/*var a = array.ToBuiltin(Vector4);
+		print(a);*/
+	}
+}
+
+/*function search(array, item : Vector2) {
 	for (var i = 0; i < array.length; i ++) {
 		if (array[i] == item) {
 			return 0;
@@ -215,7 +269,7 @@ function sort (array : Array) {
 function msort (array : Vector4[], begin : int, end : int) : Vector4[] {
 	/*print("Array: " + new Array (array));
 	print("Begin: " + begin);
-	print("End: " + end);*/
+	print("End: " + end);
 	if (begin < end) {
 		var index = begin;
 		var index2 = begin + (end - begin) / 2 + 1;
@@ -252,7 +306,7 @@ function msort (array : Vector4[], begin : int, end : int) : Vector4[] {
 		array = temp;
 	}
 	return array;
-}
+}*/
 
 // This part detects whether or not the object is grounded and stores it in a variable
 function OnCollisionEnter (collision : Collision)
