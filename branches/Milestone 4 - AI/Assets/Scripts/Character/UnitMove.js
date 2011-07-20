@@ -1,3 +1,12 @@
+// Team: SkyBox Studios
+
+// Team Members:
+// Nathan Bailey
+// Steven Bass
+// Tyler Cochran
+// Adil Delawalla
+// Tyler Meehan
+
 static private var forwardMoveDirection : Vector3 = Vector3(0, 0, 1.2);
 static private var backMoveDirection : Vector3 = Vector3(0, 0, -1.2);
 static private var leftMoveDirection : Vector3 = Vector3(-1.2, 0, 0);
