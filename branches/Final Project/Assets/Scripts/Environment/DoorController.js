@@ -33,9 +33,7 @@ function FixedUpdate(){
 			var children = gameObject.GetComponentInChildren(Transform);
 			Debug.Log(children);
 			for(var childGO in children){
-				Debug.Log(childGO.gameObject.layer);
 				childGO.gameObject.layer = 8;
-				Debug.Log(childGO.gameObject.layer);
 			}
 		}
 	} else if(transform.position.y < targetHeight)
