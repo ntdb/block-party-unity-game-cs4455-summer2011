@@ -13,8 +13,10 @@ var collectible : GameObject;
 var triggerDistance : int = 12;
 var lcornerbound : Vector2;
 var rcornerbound : Vector2;
+var gridSpace : int = 5;
 
 // These variables are there for use by the script and don't need to be edited
+private var gridSize : float;
 private var groundedCounter = 10000;
 private var grounded : boolean = true;
 private var jumpLimit = 0;
@@ -34,63 +36,86 @@ function Awake ()
 	var playerSpeed = BoxMove.maxSpeed;
 	trans = transform;
 	maxSpeed = playerSpeed * (trans.localScale.x + trans.localScale.y + trans.localScale.z) / 3;
+	gridSize = 1.0 / gridSpace;
+	Debug.Log(gridSize);
 	createGraph();
+	//Debug.Log(graph.Count);
 }
 
 // Runs A* and controls movement
 function AI () {
 	running = true;
 	
-	var AIposition : Vector2 = Vector2(Mathf.Round(trans.position.x * 5) / 5, Mathf.Round(trans.position.z * 5) / 5);
+	var AIposition : Vector2 = Vector2(Mathf.Round(trans.position.x / gridSize), Mathf.Round(trans.position.z / gridSize));
 	var end : Vector4 = Vector4(AIposition.x, AIposition.y, 0, 0);
-	var queue : PriorityQueue = new PriorityQueue(player1, player2);
+	var queue : PriorityQueue = new PriorityQueue(player1, player2, gridSize);
 	var visited = new Hashtable();
 	
 	queue.push(end);
 	
+	//Debug.Log(Vector3.Distance(player1.position, Vector3(end.x, player1.position.y, end.y)) < triggerDistance);
+	//Debug.Log(Vector3.Distance(player2.position, Vector3(end.x, player2.position.y, end.y)) < triggerDistance);
+	//Debug.Log(queue.size() != 0);
+	//Debug.Log("Begin: ");
+	//queue.toString();
+	
 	// Check Goal Conditions
-	while ((Vector3.Distance(player1.position, Vector3(end.x, player1.position.y, end.y)) < triggerDistance || 
-			Vector3.Distance(player2.position, Vector3(end.x, player2.position.y, end.y)) < triggerDistance) && 
+	while ((Vector3.Distance(player1.position, Vector3(end.x * gridSize, player1.position.y, end.y * gridSize)) < triggerDistance || 
+			Vector3.Distance(player2.position, Vector3(end.x * gridSize, player2.position.y, end.y * gridSize)) < triggerDistance) && 
 			queue.size() != 0) {
-		
+		//Debug.Log("Hello");
 		end = queue.shift();
+		//Debug.Log("Select: " + end);
 		
-		if (Mathf.Round(end.x * 5) / 5 == Mathf.Round(AIposition.x * 5 - 1) / 5 && Mathf.Round(end.y * 5) / 5 == Mathf.Round(AIposition.y * 5) / 5) {
+		if (end.x == AIposition.x - 1 && end.y == AIposition.y) {
 			end.w = 3;
-		} else if (Mathf.Round(end.x * 5) / 5== Mathf.Round(AIposition.x * 5 + 1) / 5 && Mathf.Round(end.y * 5) / 5 == Mathf.Round(AIposition.y * 5) / 5) {
+		} else if (end.x == AIposition.x + 1 && end.y == AIposition.y) {
 			end.w = 1;
-		} else if (Mathf.Round(end.x * 5) / 5 == Mathf.Round(AIposition.x * 5) / 5 && Mathf.Round(end.y * 5) / 5 == Mathf.Round(AIposition.y * 5 - 1) / 5) {
+		} else if (end.x == AIposition.x && end.y == AIposition.y - 1) {
 			end.w = 4;
-		} else if (Mathf.Round(end.x * 5) / 5 == Mathf.Round(AIposition.x * 5) / 5 && Mathf.Round(end.y * 5) / 5 == Mathf.Round(AIposition.y * 5 + 1) / 5) {
+		} else if (end.x == AIposition.x && end.y == AIposition.y + 1) {
 			end.w = 2;
 		}
 		
 		// Check if node has been visited
 		if (!visited.Contains(Vector2(end.x, end.y))) {
-		
 			visited.Add(Vector2(end.x, end.y), null);
 			
-			if (graph.Contains(Vector2(Mathf.Round(end.x * 5 - 1) / 5, end.y)) &&
-				!visited.Contains(Vector2(Mathf.Round(end.x * 5 - 1) / 5, end.y))) {
-				queue.push(Vector4(Mathf.Round(end.x * 5 - 1) / 5, end.y, end.z + 0.2, end.w));
+			/*var adj : Array = graph[Vector2(end.x, end.y)];
+			
+			//Debug.Log(adj);
+			
+			for (var i : Vector2 in adj) {
+				if (!visited.Contains(i)) {
+					queue.push(Vector4(i.x, i.y, end.z + gridSize, end.w));
+				}
+			}*/
+			
+			if (graph.Contains(Vector2(end.x - 1, end.y)) &&
+				!visited.Contains(Vector2(end.x - 1, end.y))) {
+				queue.push(Vector4(end.x - 1, end.y, end.z + gridSize, end.w));
 			}
 			
-			if (graph.Contains(Vector2(Mathf.Round(end.x * 5 + 1) / 5, end.y)) &&
-				!visited.Contains(Vector2(Mathf.Round(end.x * 5 + 1) / 5, end.y))) {
-				queue.push(Vector4(Mathf.Round(end.x * 5 + 1) / 5, end.y, end.z + 0.2, end.w));
+			if (graph.Contains(Vector2(end.x + 1, end.y)) &&
+				!visited.Contains(Vector2(end.x + 1, end.y))) {
+				queue.push(Vector4(end.x + 1, end.y, end.z + gridSize, end.w));
 			}
 			
-			if (graph.Contains(Vector2(end.x, Mathf.Round(end.y * 5 - 1) / 5)) &&
-				!visited.Contains(Vector2(end.x, Mathf.Round(end.y * 5 - 1) / 5))) {
-				queue.push(Vector4(end.x, Mathf.Round(end.y * 5 - 1) / 5, end.z + 0.2, end.w));
+			if (graph.Contains(Vector2(end.x, end.y - 1)) &&
+				!visited.Contains(Vector2(end.x, end.y - 1))) {
+				queue.push(Vector4(end.x, end.y - 1, end.z + gridSize, end.w));
 			}
 			
-			if (graph.Contains(Vector2(end.x, Mathf.Round(end.y * 5 + 1) / 5)) &&
-				!visited.Contains(Vector2(end.x, Mathf.Round(end.y * 5 + 1) / 5))) {
-				queue.push(Vector4(end.x, Mathf.Round(end.y * 5 + 1) / 5, end.z + 0.2, end.w));
+			if (graph.Contains(Vector2(end.x, end.y + 1)) &&
+				!visited.Contains(Vector2(end.x, end.y + 1))) {
+				queue.push(Vector4(end.x, end.y + 1, end.z + gridSize, end.w));
 			}
 		}
+		//Debug.Log("Queue: ");
+		//queue.toString();
 	}
+	
+	//Debug.Log("End: " + end);
 	
 	// Set movement
 	if (end.w == 3) {
@@ -108,7 +133,7 @@ function AI () {
 	}
 	
 	// Wait for the next physics frame
-	yield WaitForFixedUpdate;
+	yield WaitForEndOfFrame;
 	running = false;
 }
 
@@ -118,15 +143,29 @@ function createGraph () {
 	graph = new Hashtable();
 	var rayhit : RaycastHit;
 	var layerMask = ~(1 << 10);
-	for (var i : float = lcornerbound.x * 5; i <= rcornerbound.x * 5; i ++) {
-		for (var j : float = lcornerbound.y * 5; j <= rcornerbound.y * 5; j ++) {
+	var temp : Array;
+	for (var i : float = lcornerbound.x / gridSize; i <= rcornerbound.x / gridSize; i ++) {
+		for (var j : float = lcornerbound.y / gridSize; j <= rcornerbound.y / gridSize; j ++) {
 			// Cast some rays to weed out undesireable locations
-			Physics.Raycast(Vector3(i / 5, 50, j / 5), -Vector3.up, rayhit, Mathf.Infinity, layerMask);
+			Physics.Raycast(Vector3(i * gridSize, 50, j * gridSize), -Vector3.up, rayhit, Mathf.Infinity, layerMask);
 			if (!Physics.Raycast(rayhit.point + (Vector3.up * trans.localScale.y / 2), Vector3.forward,  trans.localScale.z / 2, layerMask) &&
 				!Physics.Raycast(rayhit.point + (Vector3.up * trans.localScale.y / 2), -Vector3.forward,  trans.localScale.z / 2, layerMask) &&
 				!Physics.Raycast(rayhit.point + (Vector3.up * trans.localScale.y / 2), Vector3.right,  trans.localScale.x / 2, layerMask) &&
 				!Physics.Raycast(rayhit.point + (Vector3.up * trans.localScale.y / 2), -Vector3.right,  trans.localScale.x / 2, layerMask)) {
-				graph.Add(Vector2(i / 5,j / 5), "");
+				/*var adj : Array = new Array();
+				if (graph.Contains(Vector2(i - 1, j))) {
+					adj.push(Vector2(i - 1, j));
+					temp = graph[Vector2(i - 1, j)];
+					temp.push(Vector2(i,j));
+					graph[Vector2(i - 1, j)] = temp;
+				}
+				if (graph.Contains(Vector2(i, j - 1))) {
+					adj.push(Vector2(i, j - 1));
+					temp = graph[Vector2(i, j - 1)];
+					temp.push(Vector2(i,j));
+					graph[Vector2(i, j - 1)] = temp;
+				}*/
+				graph.Add(Vector2(i, j), null /*adj*/);
 			}
 		}
 	}
@@ -137,17 +176,19 @@ class PriorityQueue {
 	private var array : Array;
 	private var player1 : Transform;
 	private var player2 : Transform;
+	private var gridSize : float;
 	
-	function PriorityQueue(player1 : Transform, player2 : Transform) {
+	function PriorityQueue(player1 : Transform, player2 : Transform, gridSize : float) {
 		array = new Array();
+		this.gridSize = gridSize;
 		this.player1 = player1;
 		this.player2 = player2;
 	}
 	
 	// Cost function for sorting
 	private function cost (state : Vector4) {
-		var player1cost : float = -Mathf.Pow(Vector3.Distance(player1.position, Vector3(state.x, player1.position.y, state.y)) + state.z * (4 / 3), 2);
-		var player2cost : float = -Mathf.Pow(Vector3.Distance(player2.position, Vector3(state.x, player2.position.y, state.y)) + state.z * (4 / 3), 2);
+		var player1cost : float = -Vector3.Distance(player1.position, Vector3(state.x * gridSize, player1.position.y, state.y * gridSize)) + state.z * (5 / 4);
+		var player2cost : float = -Vector3.Distance(player2.position, Vector3(state.x * gridSize, player2.position.y, state.y * gridSize)) + state.z * (5 / 4);
 		return ((player1cost > player2cost) ? player1cost : player2cost);
 	}
 	
@@ -176,6 +217,10 @@ class PriorityQueue {
 	function size() {
 		return array.length;
 	}
+	
+	function toString() {
+		Debug.Log(array);
+	}
 }
 
 /* This part detects whether or not the object is grounded and stores it in a variable
@@ -198,6 +243,11 @@ function OnCollisionExit (collision : Collision)
 	}
 }
 
+function Update() {
+	// Run only if AI is not already running
+	if (!running && (Vector3.Distance(player1.position, trans.position) < triggerDistance || Vector3.Distance(player2.position, trans.position) < triggerDistance)) {AI();}
+}
+
 // This is called every physics frame
 function FixedUpdate ()
 {
@@ -213,8 +263,6 @@ function FixedUpdate ()
 	
 	// Run this portion only if a player is wihin a certain radius
     if (Vector3.Distance(player1.position, trans.position) < triggerDistance || Vector3.Distance(player2.position, trans.position) < triggerDistance) {
-		// Run only if AI is not already running
-		if (!running) {AI();}
 		
 		UnitMove.Move(collectible, maxSpeed, vertical, horizontal);
 			
