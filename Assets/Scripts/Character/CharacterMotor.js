@@ -401,7 +401,7 @@ private function ApplyInputVelocityChange (velocity : Vector3) {
 
 function GetGlidePowerUp(){
 	hasGlidePowerUp = true;
-	var wings : Transform = Instantiate(wingsPrefab, Vector3(transform.position.x, transform.position.y - 0.5, transform.position.z), transform.rotation);
+	var wings : Transform = Network.Instantiate(wingsPrefab, Vector3(transform.position.x, transform.position.y - 0.5, transform.position.z), transform.rotation);
 	wings.parent = transform;
 	wingsScript = wings.gameObject.GetComponent("WingsController") as WingsController;
 	if (originalMaxFallSpeed == 0)
@@ -409,7 +409,7 @@ function GetGlidePowerUp(){
 }
 
 function GetRocketSkatesPowerUp(){
-	var rocketSkates : Transform = Instantiate(skatesPrefab, transform.position, transform.rotation);
+	var rocketSkates : Transform = Network.Instantiate(skatesPrefab, transform.position, transform.rotation);
 	skatesScript = rocketSkates.gameObject.GetComponent("JetSkates") as JetSkates;
 	rocketSkates.parent = transform;
 	rocketSkates.position.y = transform.position.y - 0.85;
