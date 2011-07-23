@@ -24,15 +24,29 @@ var blueLight : GameObject;
 var greenLight1 : GameObject;
 var greenLight2 : GameObject;
 var normalDuration : float = 3.0;
+var finishSound : AudioSource;
+
+private var soundPlayedOnce = false;
+private var soundPlayedTwice = false;
 
 
 function OnCollisionEnter(collisionInfo: Collision){
 	if(collisionInfo.collider.tag == "Player" && Network.isServer){
+		if (!soundPlayedOnce){
+			networkView.RPC("RPCPlaySound", RPCMode.All);
+			soundPlayedOnce = true;
+		}
 		networkView.RPC("OnePlayerHasTouched", RPCMode.AllBuffered);
 		if(playerTouching == false)
 			playerTouching = true;
 		else
+		{
+			if (!soundPlayedTwice){
+				networkView.RPC("RPCPlaySound", RPCMode.All);
+				soundPlayedTwice = true;
+			}
 			networkView.RPC("BothPlayersAreTouching", RPCMode.AllBuffered);
+		}
 	}
 }
 
@@ -49,6 +63,13 @@ function OnePlayerHasTouched(){
 @RPC
 function BothPlayersAreTouching(){
 	finished = true;
+}
+
+@RPC
+function RPCPlaySound(){
+	if (!finishSound.isPlaying){
+		finishSound.Play();
+	}
 }
 
 function Update(){
