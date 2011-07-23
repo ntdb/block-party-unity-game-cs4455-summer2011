@@ -1,3 +1,12 @@
+// Team: SkyBox Studios
+
+// Team Members:
+// Nathan Bailey
+// Steven Bass
+// Tyler Cochran
+// Adil Delawalla
+// Tyler Meehan
+
 private var playerTouching : boolean = false;
 private var playerHasTouched : boolean = false;
 private var finished : boolean = false;

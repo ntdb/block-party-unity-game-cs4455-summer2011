@@ -1,3 +1,12 @@
+// Team: SkyBox Studios
+
+// Team Members:
+// Nathan Bailey
+// Steven Bass
+// Tyler Cochran
+// Adil Delawalla
+// Tyler Meehan
+
 #pragma strict
 #pragma implicit
 #pragma downcast
