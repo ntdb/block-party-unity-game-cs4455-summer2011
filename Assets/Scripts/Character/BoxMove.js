@@ -36,6 +36,7 @@ private var doubleJumping : boolean = false;
 private var doubleJumpCountdown = 0;
 private var sideways : boolean = false;
 public var camRot : float = 0.0;
+public var lockControls : boolean = false;
 
 // Don't let the Physics Engine rotate this physics object so it doesn't fall over when running
 function Awake ()
@@ -52,6 +53,11 @@ function Awake ()
 	}
 	
 	Cam = GameObject.FindWithTag("MainCamera");
+}
+
+//locks the controls
+function LockControls(){
+	lockControls = true;
 }
 
 // This part detects whether or not the object is grounded and stores it in a variable
@@ -83,7 +89,7 @@ function Update(){
 	}
 	else
 		partner = false;
-	if(partner || Network.isClient || !requirePartner){
+	if((partner || Network.isClient || !requirePartner) && !lockControls){
 			
 		jump = Input.GetButtonDown("Jump");
 		if(jump && (groundedCounter > 0 || grounded) && jumping == false)
@@ -111,7 +117,7 @@ function Update(){
 // This is called every physics frame
 function FixedUpdate ()
 {
-	if(partner || Network.isClient || !requirePartner){
+	if((partner || Network.isClient || !requirePartner) && !lockControls){
 		// Get the input and set variables for it
 		horizontal = Input.GetAxisRaw("Horizontal"); 
 		vertical = Input.GetAxisRaw("Vertical");
