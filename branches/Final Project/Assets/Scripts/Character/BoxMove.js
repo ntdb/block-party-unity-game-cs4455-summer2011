@@ -156,3 +156,9 @@ function cameraRight() {
 	sideways = !sideways;
 	camRot = camRot + 90;
 }
+
+function GetGlidePowerUp(){
+}
+
+function GetRocketSkatesPowerUp(){
+}

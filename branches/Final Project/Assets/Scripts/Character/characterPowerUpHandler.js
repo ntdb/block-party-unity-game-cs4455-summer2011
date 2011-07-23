@@ -9,9 +9,9 @@
 
 
 function addGlideAbility(){
-	gameObject.GetComponent("CharacterMotor").GetGlidePowerUp();
+	gameObject.GetComponent("BoxMove").GetGlidePowerUp();
 }
 
 function addRocketSkates(){
-	gameObject.GetComponent("CharacterMotor").GetRocketSkatesPowerUp();
+	gameObject.GetComponent("BoxMove").GetRocketSkatesPowerUp();
 }
