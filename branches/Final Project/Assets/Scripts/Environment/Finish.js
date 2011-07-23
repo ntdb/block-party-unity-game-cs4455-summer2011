@@ -63,6 +63,7 @@ function OnePlayerHasTouched(){
 @RPC
 function BothPlayersAreTouching(){
 	finished = true;
+	GameObject.FindWithTag("Player").GetComponent("BoxMove").LockControls();
 }
 
 @RPC
