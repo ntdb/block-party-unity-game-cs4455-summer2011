@@ -7,7 +7,6 @@
 // Adil Delawalla
 // Tyler Meehan
 
-var player : GameObject;
 private var partner = false;
 var requirePartner : boolean;
 var myGuiSkin : GUISkin;
@@ -35,6 +34,8 @@ private var rightMoveDirection;
 static var maxSpeed = 7;
 private var doubleJumping : boolean = false;
 private var doubleJumpCountdown = 0;
+private var sideways : boolean = false;
+public var camRot : float = 0.0;
 
 // Don't let the Physics Engine rotate this physics object so it doesn't fall over when running
 function Awake ()
@@ -48,7 +49,8 @@ function Awake ()
 		leftMoveDirection = Vector3(-1.2, 0, 0);
 		rightMoveDirection = Vector3(1.2, 0, 0);
 	}
-
+	
+	Cam = GameObject.FindWithTag("MainCamera");
 }
 
 // This part detects whether or not the object is grounded and stores it in a variable
@@ -91,15 +93,16 @@ function Update(){
 			doubleJumpCountdown = 5;
 		}
 		
+		if(Input.GetButtonDown("Fire1")) {
+			cameraLeft();
+		} else if(Input.GetButtonDown("Fire2")) {
+			cameraRight();
+		}
+		
 		if(jump && jumping == true && doubleJumping == false && doubleJumpCountdown == 0)
 		{
 			doubleJumping = true;
 			rigidbody.velocity.y += jumpSpeed * 1.2;
-		}
-		
-		if(rigidbody.velocity == Vector3(0,0,0)){
-			rigidbody.rotation = Quaternion.identity;
-			grounded = true;
 		}
 	}
 }
@@ -112,29 +115,15 @@ function FixedUpdate ()
 		horizontal = Input.GetAxisRaw("Horizontal"); 
 		vertical = Input.GetAxisRaw("Vertical");
 		
-		if(vertical > 0) { // moving forward
-			if(rigidbody.velocity.z < maxSpeed && canMove){
-				rigidbody.AddForceAtPosition(forwardMoveDirection, transform.position, ForceMode.VelocityChange);
-				rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotationY;
+		if(Mathf.Sqrt(Mathf.Pow(rigidbody.velocity.x,2) + Mathf.Pow(rigidbody.velocity.z,2)) < maxSpeed && canMove) {
+			if(vertical != 0) { //moving forward or backward
+				rigidbody.AddForceAtPosition(vertical > 0 ? forwardMoveDirection : backMoveDirection, transform.position, ForceMode.VelocityChange);
 			}
-		} else if(vertical < 0) {      // moving back
-			if(-rigidbody.velocity.z < maxSpeed && canMove){
-				rigidbody.AddForceAtPosition(backMoveDirection, transform.position, ForceMode.VelocityChange);
-				rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotationY;
+			if(horizontal != 0) { //moving right or left
+				rigidbody.AddForceAtPosition(horizontal > 0 ? rightMoveDirection : leftMoveDirection, transform.position, ForceMode.VelocityChange);
 			}
-		} else if(horizontal > 0) {    // moving right
-			if(rigidbody.velocity.x < maxSpeed && canMove){
-				rigidbody.AddForceAtPosition(rightMoveDirection, transform.position, ForceMode.VelocityChange);
-				rigidbody.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationY;
-			}
-		} else if(horizontal < 0) {    // moving left
-			if(-rigidbody.velocity.x < maxSpeed && canMove){
-				rigidbody.AddForceAtPosition(leftMoveDirection, transform.position, ForceMode.VelocityChange);
-				rigidbody.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationY;
-			}
-		} else {
-			rigidbody.constraints = RigidbodyConstraints.FreezeRotationY;
 		}
+		rigidbody.constraints = RigidbodyConstraints.FreezeRotationY;
 		
 		if(groundedCounter > 0) groundedCounter--;
 		if(doubleJumpCountdown > 0) doubleJumpCountdown--;
@@ -145,4 +134,24 @@ function OnGUI(){
 	if(!partner && Network.isServer && requirePartner){
 		GUI.Label( Rect((Screen.width/2)-220,(Screen.height/2)-80, Screen.width, Screen.height), "Waiting for partner", largeStyle);
 	}
+}
+
+function cameraLeft() {
+	var temp : Vector3 = forwardMoveDirection;
+	forwardMoveDirection = leftMoveDirection;
+	leftMoveDirection = backMoveDirection;
+	backMoveDirection = rightMoveDirection;
+	rightMoveDirection = temp;
+	sideways = !sideways;
+	camRot = camRot - 90;
+}
+
+function cameraRight() {
+	var temp : Vector3 = forwardMoveDirection;
+	forwardMoveDirection = rightMoveDirection;
+	rightMoveDirection = backMoveDirection;
+	backMoveDirection = leftMoveDirection;
+	leftMoveDirection = temp;
+	sideways = !sideways;
+	camRot = camRot + 90;
 }
