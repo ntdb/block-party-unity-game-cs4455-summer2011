@@ -236,8 +236,8 @@ function OnCollisionEnter (collision : Collision)
 {
 	if(collision.gameObject.layer == 0){
 		grounded = true;
-	} else if (collision.gameObject.layer == 11) {
-		Network.Destroy(collectible);
+	} else if (collision.gameObject.layer == 11 && Network.isServer) {
+			Network.Destroy(collectible);
 	}
 }
 
