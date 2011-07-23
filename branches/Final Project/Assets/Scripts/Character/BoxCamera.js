@@ -11,7 +11,7 @@ var target : Transform;
 var player : BoxMove;
 private var yRot : float = 0;
 var distance = 10.0;
-private var height : float = 7;
+private var height : float = 5;
 
 function LateUpdate () {
 	if(GameObject.FindWithTag("Player")){
@@ -24,7 +24,7 @@ function LateUpdate () {
 		
 		if (target) {
 				
-			var rotation = Quaternion.Euler(30, yRot, 0);
+			var rotation = Quaternion.Euler(15, yRot, 0);
 			var position = rotation * Vector3(0.0, 0.0, -distance) + target.position;
 			
 			position.y = target.position.y + height;
