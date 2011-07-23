@@ -40,6 +40,7 @@ public var camRot : float = 0.0;
 // Don't let the Physics Engine rotate this physics object so it doesn't fall over when running
 function Awake ()
 {
+	Destroy(GetComponent("CharacterController"));
 	if(!networkView.isMine){
 		enabled = false;
 	}
