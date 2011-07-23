@@ -12,6 +12,8 @@ var player : BoxMove;
 private var yRot : float = 0;
 var distance = 10.0;
 private var height : float = 5;
+private var maxHeight = 5;
+private var minHeight = 3;
 
 function LateUpdate () {
 	if(GameObject.FindWithTag("Player")){
@@ -27,7 +29,14 @@ function LateUpdate () {
 			var rotation = Quaternion.Euler(15, yRot, 0);
 			var position = rotation * Vector3(0.0, 0.0, -distance) + target.position;
 			
-			position.y = target.position.y + height;
+			var diff = (transform.position.y - target.position.y);
+			Debug.Log(diff);
+			if(diff > maxHeight)
+				height -= Mathf.Abs(diff)/30.0;
+			else if(diff < minHeight)
+				height += Mathf.Abs(diff)/30.0;
+			
+			position.y = height;
 			
 			transform.position = position;
 			transform.rotation = rotation;
