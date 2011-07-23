@@ -185,10 +185,17 @@ class PriorityQueue {
 		this.player2 = player2;
 	}
 	
-	// Cost function for sorting
+	// Cost function for sorting. The state.z term is the distance the AI has travelled thus far. The
+	// player is faster, so he is presumed to have travelled 25% farther over the same period of time,
+	// thus shrinking the distance between the two. A positive cost
 	private function cost (state : Vector4) {
-		var player1cost : float = -Vector3.Distance(player1.position, Vector3(state.x * gridSize, player1.position.y, state.y * gridSize)) + state.z * (5 / 4);
-		var player2cost : float = -Vector3.Distance(player2.position, Vector3(state.x * gridSize, player2.position.y, state.y * gridSize)) + state.z * (5 / 4);
+		var player1cost : float = -(Vector3.Distance(player1.position, Vector3(state.x * gridSize, player1.position.y, state.y * gridSize)) - state.z * (5 / 4));
+		var player2cost : float = -(Vector3.Distance(player2.position, Vector3(state.x * gridSize, player2.position.y, state.y * gridSize)) - state.z * (5 / 4));
+		if (player1cost > 0) {
+			player1cost = 100;
+		} if (player2cost > 0) {
+			player2cost = 100;
+		}
 		return ((player1cost > player2cost) ? player1cost : player2cost);
 	}
 	
