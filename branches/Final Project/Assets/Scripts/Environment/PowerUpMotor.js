@@ -7,21 +7,16 @@ private var spawnAnother = false;
 private var timePassed : float = 0.0;
 
 function OnNetworkLoadedLevel(){
-	if(transform.childCount == 0){
-		var newCapsule = Instantiate(Capsule, transform.position, Quaternion(0.3,-0.1,0.3,0.9));
-		newCapsule.transform.parent = transform;
-		var sc : SphereCollider;
-		sc = gameObject.AddComponent ("SphereCollider");
-	}
-		
-	if(PowerUpName == "Skates"){
-		var skates = Network.Instantiate(Skates, transform.position + Vector3(-2.649412e-05, -0.4298017, 0.1977248), transform.GetChild(0).rotation, 3);
-		skates.transform.parent = transform.GetChild(0);
-	} else if (PowerUpName == "Wings"){
-		var wings = Network.Instantiate(Wings, transform.position, transform.GetChild(0).rotation, 3);
-		wings.transform.localScale = Vector3(1.0,1.0,1.0);
-		wings.transform.parent = transform.GetChild(0);
-		wings.GetComponent("WingsController").ActivateWings();
+	if(Network.isServer){
+		if(PowerUpName == "Skates"){
+			var skates = Network.Instantiate(Skates, transform.position + Vector3(-2.649412e-05, -0.4298017, 0.1977248), transform.GetChild(0).rotation, 3);
+			skates.transform.parent = transform.GetChild(0);
+		} else if (PowerUpName == "Wings"){
+			var wings = Network.Instantiate(Wings, transform.position, transform.GetChild(0).rotation, 3);
+			wings.transform.localScale = Vector3(1.0,1.0,1.0);
+			wings.transform.parent = transform.GetChild(0);
+			wings.GetComponent("WingsController").ActivateWings();
+		}
 	}
 }
 
