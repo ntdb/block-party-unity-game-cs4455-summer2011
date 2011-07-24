@@ -34,6 +34,7 @@ private var rightMoveDirection;
 static var maxSpeed = 7;
 private var doubleJumping : boolean = false;
 private var doubleJumpCountdown = 0;
+private var quaternionCountdown = 15;
 private var sideways : boolean = false;
 public var camRot : float = 0.0;
 public var lockControls : boolean = false;
@@ -111,6 +112,10 @@ function Update(){
 			doubleJumping = true;
 			rigidbody.velocity.y += jumpSpeed * 1.2;
 		}
+
+		if(!Input.anyKey && rigidbody.angularVelocity.magnitude < .3){
+			rigidbody.rotation = Quaternion.identity;
+		}
 	}
 }
 
@@ -125,15 +130,22 @@ function FixedUpdate ()
 		if(Mathf.Sqrt(Mathf.Pow(rigidbody.velocity.x,2) + Mathf.Pow(rigidbody.velocity.z,2)) < maxSpeed && canMove) {
 			if(vertical != 0) { //moving forward or backward
 				rigidbody.AddForceAtPosition(vertical > 0 ? forwardMoveDirection : backMoveDirection, transform.position, ForceMode.VelocityChange);
+				if (horizontal == 0){
+					rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotationY;
+				}
 			}
 			if(horizontal != 0) { //moving right or left
 				rigidbody.AddForceAtPosition(horizontal > 0 ? rightMoveDirection : leftMoveDirection, transform.position, ForceMode.VelocityChange);
+				if (vertical == 0){
+					rigidbody.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationY;
+				}
 			}
 		}
 		rigidbody.constraints = RigidbodyConstraints.FreezeRotationY;
 		
 		if(groundedCounter > 0) groundedCounter--;
 		if(doubleJumpCountdown > 0) doubleJumpCountdown--;
+		if(quaternionCountdown > 0 && !Input.anyKey) quaternionCountdown--;
 	}
 }
 function OnGUI(){
