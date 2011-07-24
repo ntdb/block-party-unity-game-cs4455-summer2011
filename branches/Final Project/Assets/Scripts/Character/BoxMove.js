@@ -176,6 +176,7 @@ function cameraRight() {
 }
 
 function GetGlidePowerUp(){
+	Debug.Log("Got Glide");
 }
 
 function GetRocketSkatesPowerUp(){
