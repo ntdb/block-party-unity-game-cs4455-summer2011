@@ -21,9 +21,14 @@ function Update(){
 				Timers[i] += Time.deltaTime;
 				if(Timers[i] >= respawnTime){
 					Timers[i] = 0;
-					Powerups[i].transform.position.x = previousXPositions[i];
+					networkView.RPC("moveOneBack", RPCMode.AllBuffered, i);
 				}
 			}
 		}
 	}
+}
+
+@RPC
+function moveOneBack(i : int){
+	Powerups[i].transform.position.x = previousXPositions[i];
 }
