@@ -7,7 +7,7 @@ private var timePassed : float = 0.0;
 
 function OnNetworkLoadedLevel(){
 	if(Network.isServer){
-		networkView.RPC("InstantiateVisualCue", RPC.AllBuffered);
+		networkView.RPC("InstantiateVisualCue", RPCMode.AllBuffered);
 	}
 }
 
