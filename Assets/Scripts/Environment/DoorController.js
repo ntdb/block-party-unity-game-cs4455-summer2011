@@ -42,7 +42,6 @@ function FixedUpdate(){
 		if(!triggered){
 			triggered = true;
 			var children = gameObject.GetComponentInChildren(Transform);
-			Debug.Log(children);
 			for(var childGO in children){
 				childGO.gameObject.layer = 8;
 			}
