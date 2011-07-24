@@ -64,13 +64,17 @@ function LockControls(){
 // This part detects whether or not the object is grounded and stores it in a variable
 function OnCollisionEnter (collision : Collision)
 {
-	if(collision.gameObject.layer == 8){
-		grounded = true;
-		jumping = false;
-		doubleJumping = false;
+	if(gliding){
 		canMove = true;
-	} else if(collision.gameObject.layer == 9 && jumping){
-		canMove = false;
+	} else {
+		if(collision.gameObject.layer == 8){
+			grounded = true;
+			jumping = false;
+			doubleJumping = false;
+			canMove = true;
+		} else if(collision.gameObject.layer == 9 && jumping){
+			canMove = false;
+		}
 	}
 }
 
@@ -85,6 +89,8 @@ function OnCollisionExit (collision : Collision)
 }
 
 function Update(){
+	if(!jumping)
+		canMove = true;
 	if(Network.connections.Length > 0){
 		partner = true;
 	}
@@ -93,6 +99,7 @@ function Update(){
 	if((partner || Network.isClient || !requirePartner) && !lockControls){
 			
 		jump = Input.GetButtonDown("Jump");
+		action = Input.GetButtonDown("Action");
 		if(jump && (groundedCounter > 0 || grounded) && jumping == false)
 		{
 			rigidbody.velocity.y += jumpSpeed;
@@ -101,9 +108,9 @@ function Update(){
 			doubleJumpCountdown = 5;
 		}
 		
-		if(Input.GetButtonDown("Fire1")) {
+		if(Input.GetButtonDown("RotateCamL")) {
 			cameraLeft();
-		} else if(Input.GetButtonDown("Fire2")) {
+		} else if(Input.GetButtonDown("RotateCamR")) {
 			cameraRight();
 		}
 		
