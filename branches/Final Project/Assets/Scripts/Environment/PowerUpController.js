@@ -8,10 +8,10 @@ function Awake(){
 		Timers = new float[Powerups.length];
 		for(var timer in Timers)
 			timer = 0.0;
-		previousXPositions = new int[Powerups.length];
-		for(var i = 0; i < previousXPositions.length; i++)
-			previousXPositions[i] = Powerups[i].transform.position.x;
 	}
+	previousXPositions = new int[Powerups.length];
+	for(var i = 0; i < previousXPositions.length; i++)
+		previousXPositions[i] = Powerups[i].transform.position.x;
 }
 
 function Update(){
