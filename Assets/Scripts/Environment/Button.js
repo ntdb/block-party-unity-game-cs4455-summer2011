@@ -13,8 +13,10 @@ var child : Transform;
 var buttonOnSound : AudioSource;
 var buttonOffSound : AudioSource;
 var targetGOname : String;
+var buttonGracePeriod : float = 0.5;
 private var checkForPlayerOffSwitch : boolean = false;
 private var playerIsOnSwitch : boolean = false;
+private var timer : float = 0.0;
 
 private var pressed = false;
 
@@ -50,15 +52,17 @@ function Update(){
 			checkForPlayerOffSwitch = true;
 			timer = 0;
 		}
-		if(checkForPlayerOffSwitch){
+		if(checkForPlayerOffSwitch && !playerIsOnSwitch){
 			timer += Time.deltaTime;
-			if(timer >= 1.0)
+			Debug.Log(timer);
+			if(timer >= buttonGracePeriod){
 				child.position.y = transform.position.y + 0.2;
 				checkForPlayerOffSwitch = false;
 				switch(targetGOname){
 					case "Door" : break;
 					default :	  Debug.Log("Unknown target GO type: " + targetGOname);
 				}
+			}
 		}
 	}
 }
