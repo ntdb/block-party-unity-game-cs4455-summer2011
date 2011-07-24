@@ -23,11 +23,14 @@ private var pressed = false;
 function OnCollisionEnter(other : Collision){
 	if(other.collider.tag == "Player"){
 		if(Network.isServer){
-			networkView.RPC("RPCPlayOnSound", RPCMode.All);
+			if(!pressed)
+				networkView.RPC("RPCPlayOnSound", RPCMode.All);
 			child.position.y = transform.position.y;
 			playerIsOnSwitch = true;
 			switch(targetGOname){
 				case "Door": targetGO.GetComponent("DoorController").OpenDoor();
+							 break;
+				case "Gate": targetGO.GetComponent("GateController").OpenGate();
 							 break;
 				default:
 							Debug.Log("Unknown target GO type: " + targetGOname);
@@ -58,8 +61,11 @@ function Update(){
 			if(timer >= buttonGracePeriod){
 				child.position.y = transform.position.y + 0.2;
 				checkForPlayerOffSwitch = false;
+				pressed = false;
 				switch(targetGOname){
 					case "Door" : break;
+					case "Gate" : targetGO.GetComponent("GateController").CloseGate();
+								  break;
 					default :	  Debug.Log("Unknown target GO type: " + targetGOname);
 				}
 			}
