@@ -17,8 +17,11 @@ var cubeSpeed : float = .5;
 var cubeSize : float = 1;
 var jumpSpeed = 5.000;
 
-// Other things...
-//var Cam : GameObject;
+// These are external vars needed for powerups
+var HasGlidePowerUp : boolean = false;
+var Wings : GameObject;
+var HasRocketSkates : boolean = false;
+var Skates : GameObject;
 
 // These variables are there for use by the script and don't need to be edited
 private var state = 0;
@@ -38,6 +41,7 @@ private var quaternionCountdown = 15;
 private var sideways : boolean = false;
 public var camRot : float = 0.0;
 public var lockControls : boolean = false;
+private var gliding : boolean = false;
 
 // Don't let the Physics Engine rotate this physics object so it doesn't fall over when running
 function Awake ()
@@ -100,6 +104,11 @@ function Update(){
 			
 		jump = Input.GetButtonDown("Jump");
 		action = Input.GetButtonDown("Action");
+		
+		if(action){
+		} else {
+		}
+		
 		if(jump && (groundedCounter > 0 || grounded) && jumping == false)
 		{
 			rigidbody.velocity.y += jumpSpeed;
@@ -183,8 +192,9 @@ function cameraRight() {
 }
 
 function GetGlidePowerUp(){
-	Debug.Log("Got Glide");
+	HasGlidePowerUp = true;
 }
 
 function GetRocketSkatesPowerUp(){
+	HasRocketSkates = true;
 }
