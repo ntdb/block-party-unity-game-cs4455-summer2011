@@ -2,24 +2,27 @@ var speed = 1;
 public var PowerUpName : String;
 public var Skates : GameObject;
 public var Wings : GameObject;
-public var Capsule : GameObject;
 private var spawnAnother = false;
 private var timePassed : float = 0.0;
 
 function OnNetworkLoadedLevel(){
 	if(Network.isServer){
-		if(PowerUpName == "Skates"){
-			var skates = Network.Instantiate(Skates, transform.position + Vector3(-2.649412e-05, -0.4298017, 0.1977248), transform.GetChild(0).rotation, 3);
-			skates.transform.parent = transform.GetChild(0);
-		} else if (PowerUpName == "Wings"){
-			var wings = Network.Instantiate(Wings, transform.position, transform.GetChild(0).rotation, 3);
-			wings.transform.localScale = Vector3(1.0,1.0,1.0);
-			wings.transform.parent = transform.GetChild(0);
-			wings.GetComponent("WingsController").ActivateWings();
-		}
+		networkView.RPC("InstantiateVisualCue", RPC.AllBuffered);
 	}
 }
 
+@RPC
+function InstantiateVisualCue(){
+	if(PowerUpName == "Skates"){
+		var skates = Instantiate(Skates, transform.position + Vector3(-2.649412e-05, -0.4298017, 0.1977248), transform.GetChild(0).rotation);
+		skates.transform.parent = transform.GetChild(0);
+	} else if (PowerUpName == "Wings"){
+		var wings = Instantiate(Wings, transform.position, transform.GetChild(0).rotation);
+		wings.transform.localScale = Vector3(1.0,1.0,1.0);
+		wings.transform.parent = transform.GetChild(0);
+		wings.GetComponent("WingsController").ActivateWings();
+	}
+}
 
 function Update () {
 	transform.Rotate(-Vector3.up * Time.deltaTime * speed);
