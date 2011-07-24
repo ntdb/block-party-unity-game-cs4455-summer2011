@@ -30,7 +30,7 @@ function LateUpdate () {
 			var position = rotation * Vector3(0.0, 0.0, -distance) + target.position;
 			
 			var diff = (transform.position.y - target.position.y);
-			Debug.Log(diff);
+			//Debug.Log(diff);
 			if(diff > maxHeight)
 				height -= Mathf.Abs(diff)/30.0;
 			else if(diff < minHeight)
