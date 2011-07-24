@@ -50,7 +50,6 @@ function OnGUI() {
 
 @RPC
 function LoadLevel(level : String, levelPrefix : int) {
-	Debug.Log("Loading level " + level + " with prefix " + levelPrefix);
 	lastLevelPrefix = levelPrefix;
 	
 	Network.SetSendingEnabled(0, false);

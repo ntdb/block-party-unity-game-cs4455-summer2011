@@ -2,17 +2,29 @@ var speed = 1;
 public var PowerUpName : String;
 public var Skates : GameObject;
 public var Wings : GameObject;
+public var Capsule : GameObject;
+private var spawnAnother = false;
+private var timePassed : float = 0.0;
 
-function Awake(){
+function OnNetworkLoadedLevel(){
+	if(transform.childCount == 0){
+		var newCapsule = Instantiate(Capsule, transform.position, Quaternion(0.3,-0.1,0.3,0.9));
+		newCapsule.transform.parent = transform;
+		var sc : SphereCollider;
+		sc = gameObject.AddComponent ("SphereCollider");
+	}
+		
 	if(PowerUpName == "Skates"){
-		var skates = Instantiate(Skates, transform.position, transform.GetChild(0).rotation);
-		skates.transform.parent = transform;
+		var skates = Network.Instantiate(Skates, transform.position + Vector3(-2.649412e-05, -0.4298017, 0.1977248), transform.GetChild(0).rotation, 3);
+		skates.transform.parent = transform.GetChild(0);
 	} else if (PowerUpName == "Wings"){
-		var wings = Instantiate(Wings, transform.position, transform.GetChild(0).rotation);
-		wings.transform.parent = transform;
+		var wings = Network.Instantiate(Wings, transform.position, transform.GetChild(0).rotation, 3);
+		wings.transform.localScale = Vector3(1.0,1.0,1.0);
+		wings.transform.parent = transform.GetChild(0);
 		wings.GetComponent("WingsController").ActivateWings();
 	}
 }
+
 
 function Update () {
 	transform.Rotate(-Vector3.up * Time.deltaTime * speed);
@@ -20,16 +32,33 @@ function Update () {
 
 function OnCollisionEnter(collision : Collision){
 	if(collision.collider.gameObject.tag == "Player"){
+		var shouldGetPowerUp = false;
 		switch(PowerUpName){
 			case "Wings" : 
-							collision.collider.gameObject.GetComponent("characterPowerUpHandler").addGlideAbility(); 
-							break;
+							if(!collision.collider.gameObject.GetComponent("BoxMove").HasGlidePowerUp) shouldGetPowerUp = true; break;
 			case "Skates" :
-							collision.collider.gameObject.GetComponent("characterPowerUpHandler").addRocketSkates();
-							break;
-			default : 
-							Debug.Log("Unknown ability '" + PowerUpName + "' - no power up granted"); break;
+							if(!collision.collider.gameObject.GetComponent("BoxMove").HasRocketSkates) shouldGetPowerUp = true; break;
 		}
-		Destroy(gameObject);
+		
+		if(shouldGetPowerUp){
+			switch(PowerUpName){
+				case "Wings" : 
+								collision.collider.gameObject.GetComponent("characterPowerUpHandler").addGlideAbility(); 
+								break;
+				case "Skates" :
+								collision.collider.gameObject.GetComponent("characterPowerUpHandler").addRocketSkates();
+								break;
+				default : 
+								Debug.Log("Unknown ability '" + PowerUpName + "' - no power up granted"); break;
+			}
+			if(Network.isServer){
+				networkView.RPC("moveToHoldingArea", RPCMode.AllBuffered);
+			}
+		}
 	}
+}
+
+@RPC
+function moveToHoldingArea(){
+	transform.position.x = 11000;
 }

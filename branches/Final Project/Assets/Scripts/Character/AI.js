@@ -37,9 +37,7 @@ function Awake ()
 	trans = transform;
 	maxSpeed = playerSpeed * (trans.localScale.x + trans.localScale.y + trans.localScale.z) / 3;
 	gridSize = 1.0 / gridSpace;
-	Debug.Log(gridSize);
 	createGraph();
-	//Debug.Log(graph.Count);
 }
 
 // Runs A* and controls movement
