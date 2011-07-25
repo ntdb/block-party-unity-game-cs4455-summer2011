@@ -20,8 +20,10 @@ var jumpSpeed = 5.000;
 // These are external vars needed for powerups
 var HasGlidePowerUp : boolean = false;
 var Wings : GameObject;
+private var wingsAreActivated : boolean = false;
 var HasRocketSkates : boolean = false;
 var Skates : GameObject;
+var HasHeavyPowerUp : boolean = false;
 
 // These variables are there for use by the script and don't need to be edited
 private var state = 0;
@@ -106,8 +108,9 @@ function Update(){
 		action = Input.GetButtonDown("Action");
 		
 		if(action){
-			ActivateCurrentPowerUp();
+			DoSpecialAction();
 		} else {
+			// do cleanup?
 		}
 		
 		if(jump && (groundedCounter > 0 || grounded) && jumping == false)
@@ -185,8 +188,8 @@ function GetGlidePowerUp(){
 	HasGlidePowerUp = true;
 	HasRocketSkates = false;
 	transform.rotation = Quaternion.identity;
-	if(transform.GetChild(0) != null){
-		Network.Destroy(transform.GetChild(0));
+	if(transform.childCount > 0){
+		Network.Destroy(transform.GetChild(0).gameObject);
 	}
 	var wings = Network.Instantiate(Wings, Vector3(transform.position.x, transform.position.y - 0.5, transform.position.z), transform.rotation, 4);
 	wings.transform.parent = transform;
@@ -195,8 +198,8 @@ function GetGlidePowerUp(){
 function GetRocketSkatesPowerUp(){
 	HasRocketSkates = true;
 	HasGlidePowerUp = false;
-	if(transform.GetChild(0) != null){
-		Network.Destroy(transform.GetChild(0));
+	if(transform.childCount > 0){
+		Network.Destroy(transform.GetChild(0).gameObject);
 	}
 }
 
@@ -204,7 +207,20 @@ function GetHeavyPowerUp(){
 	HasHeavyPowerUp = true;
 	HasRocketSkates = false;
 	HasGlidePowerUp = false;
-	if(transform.GetChild(0) != null){
-		Network.Destroy(transform.GetChild(0));
+	if(transform.childCount > 0){
+		Network.Destroy(transform.GetChild(0).gameObject);
+	}
+}
+
+function DoSpecialAction(){
+	if(HasGlidePowerUp){
+		if(!wingsAreActivated){
+			transform.GetChild(0).GetComponent("WingsController").ActivateWings();
+			rigidbody.useGravity = false;
+			
+		}
+	} else if(HasRocketSkates){
+	} else if(HasHeavyPowerUp){
+		// probably do nothing since this is more a status than an ability
 	}
 }
