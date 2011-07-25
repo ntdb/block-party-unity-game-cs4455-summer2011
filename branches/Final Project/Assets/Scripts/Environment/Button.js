@@ -32,6 +32,8 @@ function OnCollisionEnter(other : Collision){
 							 break;
 				case "Gate": targetGO.GetComponent("GateController").OpenGate();
 							 break;
+				case "Gate": targetGO.GetComponent("LaunchController").Launching();
+							 break;
 				default:
 							Debug.Log("Unknown target GO type: " + targetGOname);
 			}
@@ -66,6 +68,8 @@ function Update(){
 					case "Door" : break;
 					case "Gate" : targetGO.GetComponent("GateController").CloseGate();
 								  break;
+					case "Launch" : targetGO.GetComponent("LaunchController");
+								 break;
 					default :	  Debug.Log("Unknown target GO type: " + targetGOname);
 				}
 			}
