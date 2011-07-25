@@ -106,6 +106,7 @@ function Update(){
 		action = Input.GetButtonDown("Action");
 		
 		if(action){
+			ActivateCurrentPowerUp();
 		} else {
 		}
 		
@@ -128,10 +129,6 @@ function Update(){
 			doubleJumping = true;
 			rigidbody.velocity.y += jumpSpeed * 1.2;
 		}
-
-		if(!Input.anyKey && rigidbody.angularVelocity.magnitude < .3){
-			rigidbody.rotation = Quaternion.identity;
-		}
 	}
 }
 
@@ -146,18 +143,11 @@ function FixedUpdate ()
 		if(Mathf.Sqrt(Mathf.Pow(rigidbody.velocity.x,2) + Mathf.Pow(rigidbody.velocity.z,2)) < maxSpeed && canMove) {
 			if(vertical != 0) { //moving forward or backward
 				rigidbody.AddForceAtPosition(vertical > 0 ? forwardMoveDirection : backMoveDirection, transform.position, ForceMode.VelocityChange);
-				if (horizontal == 0){
-					rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotationY;
-				}
 			}
 			if(horizontal != 0) { //moving right or left
 				rigidbody.AddForceAtPosition(horizontal > 0 ? rightMoveDirection : leftMoveDirection, transform.position, ForceMode.VelocityChange);
-				if (vertical == 0){
-					rigidbody.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationY;
-				}
 			}
 		}
-		rigidbody.constraints = RigidbodyConstraints.FreezeRotationY;
 		
 		if(groundedCounter > 0) groundedCounter--;
 		if(doubleJumpCountdown > 0) doubleJumpCountdown--;
@@ -193,8 +183,28 @@ function cameraRight() {
 
 function GetGlidePowerUp(){
 	HasGlidePowerUp = true;
+	HasRocketSkates = false;
+	transform.rotation = Quaternion.identity;
+	if(transform.GetChild(0) != null){
+		Network.Destroy(transform.GetChild(0));
+	}
+	var wings = Network.Instantiate(Wings, Vector3(transform.position.x, transform.position.y - 0.5, transform.position.z), transform.rotation, 4);
+	wings.transform.parent = transform;
 }
 
 function GetRocketSkatesPowerUp(){
 	HasRocketSkates = true;
+	HasGlidePowerUp = false;
+	if(transform.GetChild(0) != null){
+		Network.Destroy(transform.GetChild(0));
+	}
+}
+
+function GetHeavyPowerUp(){
+	HasHeavyPowerUp = true;
+	HasRocketSkates = false;
+	HasGlidePowerUp = false;
+	if(transform.GetChild(0) != null){
+		Network.Destroy(transform.GetChild(0));
+	}
 }
