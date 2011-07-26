@@ -2,6 +2,7 @@ var speed = 1;
 public var PowerUpName : String;
 public var Skates : GameObject;
 public var Wings : GameObject;
+public var Heavy : GameObject;
 private var spawnAnother = false;
 private var timePassed : float = 0.0;
 
@@ -22,6 +23,8 @@ function InstantiateVisualCue(name : String){
 		wings.transform.localScale = Vector3(1.0,1.0,1.0);
 		wings.transform.parent = transform.GetChild(0);
 		wings.GetComponent("WingsController").ActivateWings();
+	} else if (name == "Heavy"){
+		transform.GetChild(0).renderer.material.color = Color.gray;
 	}
 }
 
@@ -37,6 +40,8 @@ function OnCollisionEnter(collision : Collision){
 							if(!collision.collider.gameObject.GetComponent("BoxMove").HasGlidePowerUp) shouldGetPowerUp = true; break;
 			case "Skates" :
 							if(!collision.collider.gameObject.GetComponent("BoxMove").HasRocketSkates) shouldGetPowerUp = true; break;
+			case "Heavy" :
+							if(!collision.collider.gameObject.GetComponent("BoxMove").HasHeavyPowerUp) shouldGetPowerUp = true; break;
 		}
 		
 		if(shouldGetPowerUp){
@@ -46,6 +51,9 @@ function OnCollisionEnter(collision : Collision){
 								break;
 				case "Skates" :
 								collision.collider.gameObject.GetComponent("characterPowerUpHandler").addRocketSkates();
+								break;
+				case "Heavy" :
+								collision.collider.gameObject.GetComponent("characterPowerUpHandler").addHeavyPowerUp();
 								break;
 				default : 
 								Debug.Log("Unknown ability '" + PowerUpName + "' - no power up granted"); break;

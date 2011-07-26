@@ -50,6 +50,7 @@ private var sideways : boolean = false;
 public var camRot : float = 0.0;
 public var lockControls : boolean = false;
 private var gliding : boolean = false;
+private var coloration : Color = Color(.1451, .3843, .7255, 1);
 
 // Don't let the Physics Engine rotate this physics object so it doesn't fall over when running
 function Awake ()
@@ -124,7 +125,7 @@ function Update(){
 			}
 		}
 		
-		if(jump && (groundedCounter > 0 || grounded) && jumping == false)
+		if(jump && (groundedCounter > 0 || grounded) && jumping == false && !HasHeavyPowerUp)
 		{
 			rigidbody.velocity.y += jumpSpeed;
 			groundedCounter = 0;
@@ -207,6 +208,7 @@ function cameraRight() {
 function GetGlidePowerUp(){
 	HasGlidePowerUp = true;
 	HasRocketSkates = false;
+	HasHeavyPowerUp = false;
 	transform.rotation = Quaternion.identity;
 	collider.sharedMaterial = boxRollMaterial;
 	collider.size.y = 1;
@@ -217,11 +219,13 @@ function GetGlidePowerUp(){
 	}
 	var wings = Network.Instantiate(Wings, Vector3(transform.position.x, transform.position.y - 0.5, transform.position.z), transform.rotation, 4);
 	wings.transform.parent = transform;
+	gameObject.renderer.material.color = coloration;
 }
 
 function GetRocketSkatesPowerUp(){
 	HasRocketSkates = true;
 	HasGlidePowerUp = false;
+	HasHeavyPowerUp = false;
 	transform.rotation = Quaternion.identity;
 	transform.position = Vector3(transform.position.x, transform.position.y + 0.5, transform.position.z);
 	collider.sharedMaterial = skatesMaterial;
@@ -234,6 +238,7 @@ function GetRocketSkatesPowerUp(){
 	skates.transform.parent = transform;
 	rigidbody.angularVelocity == Vector3(0,0,0);
 	rigidbody.constraints = RigidbodyConstraints.FreezeRotationX || RigidbodyConstraints.FreezeRotationZ;
+	gameObject.renderer.material.color = coloration;
 }
 
 function GetHeavyPowerUp(){
@@ -247,6 +252,7 @@ function GetHeavyPowerUp(){
 	if(transform.childCount > 0){
 		Network.Destroy(transform.GetChild(0).gameObject);
 	}
+	gameObject.renderer.material.color = Color.gray;
 }
 
 function DoSpecialAction(){
