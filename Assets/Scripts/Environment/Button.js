@@ -30,7 +30,7 @@ function OnCollisionEnter(other : Collision){
 			switch(targetGO.name){
 				case "Door": targetGO.GetComponent("DoorController").OpenDoor();
 							 break;
-				case "Bars": targetGO.GetComponent("BarController").down = true;
+				case "Bars": targetGO.GetComponent("BarController").Down();
 							 break;
 				case "Launcher": targetGO.GetComponent("Launcher").Activate();
 								 break;
@@ -67,7 +67,7 @@ function Update(){
 				pressed = false;
 				switch(targetGO.name){
 					case "Door" : break;
-					case "Bars" : targetGO.GetComponent("BarController").down = false;
+					case "Bars" : targetGO.GetComponent("BarController").Up();
 								  break;
 					case "Launcher" : targetGO.GetComponent("Launcher").Deactivate();
 								  break;
