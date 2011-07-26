@@ -15,7 +15,7 @@ function Update () {
 	if(xAxisMovement){
 		if(reachedDestination){
 			
-		} else if((Mathf.Abs(transform.position.x - targetPosition.x) > 0.2){
+		} else if((Mathf.Abs(transform.position.x - targetPosition.x) > 0.2)){
 			if(transform.position.x > targetPosition.x)
 				transform.position.x -= Time.deltaTime * moveSpeed;
 			else
