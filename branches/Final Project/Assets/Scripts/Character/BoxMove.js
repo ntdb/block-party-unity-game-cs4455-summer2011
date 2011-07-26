@@ -53,10 +53,10 @@ function Awake ()
 		enabled = false;
 	}
 	else{
-		forwardMoveDirection = Vector3(0, 0, 1.2);
-		backMoveDirection = Vector3(0, 0, -1.2);
-		leftMoveDirection = Vector3(-1.2, 0, 0);
-		rightMoveDirection = Vector3(1.2, 0, 0);
+		forwardMoveDirection = Vector3(0, 0, cubeSpeed);
+		backMoveDirection = Vector3(0, 0, -cubeSpeed);
+		leftMoveDirection = Vector3(-cubeSpeed, 0, 0);
+		rightMoveDirection = Vector3(cubeSpeed, 0, 0);
 	}
 	
 	Cam = GameObject.FindWithTag("MainCamera");
@@ -78,7 +78,7 @@ function OnCollisionEnter (collision : Collision)
 			jumping = false;
 			doubleJumping = false;
 			canMove = true;
-		} else if(collision.gameObject.layer == 9 && jumping){
+		} else if(collision.gameObject.layer == 9 && jumping && wingsAreActivated){
 			canMove = false;
 		}
 	}
@@ -95,8 +95,6 @@ function OnCollisionExit (collision : Collision)
 }
 
 function Update(){
-	if(!jumping)
-		canMove = true;
 	if(Network.connections.Length > 0){
 		partner = true;
 	}
@@ -138,6 +136,10 @@ function Update(){
 // This is called every physics frame
 function FixedUpdate ()
 {
+	if(!grounded){
+		rigidbody.velocity = Vector3.Scale(rigidbody.velocity, Vector3(0.99, 0.99, 0.99));
+	}
+	
 	if((partner || Network.isClient || !requirePartner) && !lockControls){
 		// Get the input and set variables for it
 		horizontal = Input.GetAxisRaw("Horizontal"); 
@@ -154,7 +156,6 @@ function FixedUpdate ()
 		
 		if(groundedCounter > 0) groundedCounter--;
 		if(doubleJumpCountdown > 0) doubleJumpCountdown--;
-		if(quaternionCountdown > 0 && !Input.anyKey) quaternionCountdown--;
 	}
 }
 function OnGUI(){
@@ -215,9 +216,18 @@ function GetHeavyPowerUp(){
 function DoSpecialAction(){
 	if(HasGlidePowerUp){
 		if(!wingsAreActivated){
+			wingsAreActivated = true;
 			transform.GetChild(0).GetComponent("WingsController").ActivateWings();
 			rigidbody.useGravity = false;
-			
+			transform.rotation = Quaternion.identity;
+			rigidbody.angularVelocity = Vector3(0,0,0);
+			rigidbody.constraints = RigidbodyConstraints.FreezePositionY || RigidbodyConstraints.FreezeRotationX || RigidbodyConstraints.FreezeRotationZ;
+		} else {
+			wingsAreActivated = false;
+			Debug.Log("deactivating");
+			transform.GetChild(0).GetComponent("WingsController").DeactivateWings();
+			rigidbody.useGravity = true;
+			rigidbody.constraints = RigidbodyConstraints.None;
 		}
 	} else if(HasRocketSkates){
 	} else if(HasHeavyPowerUp){
