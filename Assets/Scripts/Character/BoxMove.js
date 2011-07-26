@@ -23,7 +23,13 @@ var Wings : GameObject;
 private var wingsAreActivated : boolean = false;
 var HasRocketSkates : boolean = false;
 var Skates : GameObject;
+private var skatesAreActivated : boolean = false;
+private var originalMaxSpeed : float = 7.0;
+var skatesSpeed : float = 14;
 var HasHeavyPowerUp : boolean = false;
+
+public var boxRollMaterial : PhysicMaterial;
+public var skatesMaterial : PhysicMaterial;
 
 // These variables are there for use by the script and don't need to be edited
 private var state = 0;
@@ -106,9 +112,16 @@ function Update(){
 		action = Input.GetButtonDown("Action");
 		
 		if(action){
-			DoSpecialAction();
+			if(HasRocketSkates){
+				if(!skatesAreActivated)
+					DoSpecialAction();
+			} else if(HasGlidePowerUp)
+				DoSpecialAction();
 		} else {
-			// do cleanup?
+			if(HasRocketSkates){
+				if(skatesAreActivated)
+					DoSpecialAction();
+			}
 		}
 		
 		if(jump && (groundedCounter > 0 || grounded) && jumping == false)
@@ -148,9 +161,15 @@ function FixedUpdate ()
 		if(Mathf.Sqrt(Mathf.Pow(rigidbody.velocity.x,2) + Mathf.Pow(rigidbody.velocity.z,2)) < maxSpeed && canMove) {
 			if(vertical != 0) { //moving forward or backward
 				rigidbody.AddForceAtPosition(vertical > 0 ? forwardMoveDirection : backMoveDirection, transform.position, ForceMode.VelocityChange);
+				if(wingsAreActivated || skatesAreActivated){
+					rigidbody.rotation = Quaternion.Slerp(rigidbody.rotation, Quaternion.LookRotation(vertical > 0 ? forwardMoveDirection : backMoveDirection), Time.deltaTime * 10);
+				}
 			}
 			if(horizontal != 0) { //moving right or left
 				rigidbody.AddForceAtPosition(horizontal > 0 ? rightMoveDirection : leftMoveDirection, transform.position, ForceMode.VelocityChange);
+				if(wingsAreActivated || skatesAreActivated){
+					rigidbody.rotation = Quaternion.Slerp(rigidbody.rotation, Quaternion.LookRotation(horizontal > 0 ? rightMoveDirection : leftMoveDirection), Time.deltaTime * 10);
+				}
 			}
 		}
 		
@@ -189,6 +208,10 @@ function GetGlidePowerUp(){
 	HasGlidePowerUp = true;
 	HasRocketSkates = false;
 	transform.rotation = Quaternion.identity;
+	collider.sharedMaterial = boxRollMaterial;
+	collider.size.y = 1;
+	collider.center.y = 0;
+	rigidbody.constraints = RigidbodyConstraints.None;
 	if(transform.childCount > 0){
 		Network.Destroy(transform.GetChild(0).gameObject);
 	}
@@ -199,15 +222,28 @@ function GetGlidePowerUp(){
 function GetRocketSkatesPowerUp(){
 	HasRocketSkates = true;
 	HasGlidePowerUp = false;
+	transform.rotation = Quaternion.identity;
+	transform.position = Vector3(transform.position.x, transform.position.y + 0.5, transform.position.z);
+	collider.sharedMaterial = skatesMaterial;
+	collider.size.y = 1.6;
+	collider.center.y = -0.3;
 	if(transform.childCount > 0){
 		Network.Destroy(transform.GetChild(0).gameObject);
 	}
+	var skates = Network.Instantiate(Skates, transform.position, transform.rotation, 4);
+	skates.transform.parent = transform;
+	rigidbody.angularVelocity == Vector3(0,0,0);
+	rigidbody.constraints = RigidbodyConstraints.FreezeRotationX || RigidbodyConstraints.FreezeRotationZ;
 }
 
 function GetHeavyPowerUp(){
 	HasHeavyPowerUp = true;
 	HasRocketSkates = false;
 	HasGlidePowerUp = false;
+	collider.size.y = 1;
+	collider.center.y = 0;
+	collider.sharedMaterial = boxRollMaterial;
+	rigidbody.constraints = RigidbodyConstraints.None;
 	if(transform.childCount > 0){
 		Network.Destroy(transform.GetChild(0).gameObject);
 	}
@@ -230,6 +266,15 @@ function DoSpecialAction(){
 			rigidbody.constraints = RigidbodyConstraints.None;
 		}
 	} else if(HasRocketSkates){
+		if(!skatesAreActivated){
+			skatesAreActivated = true;
+			transform.GetChild(0).GetComponent("JetSkates").TurnOnJets();
+			transform.rotation = Quaternion.identity;
+		} else {
+			skatesAreActivated = false;
+			maxSpeed = originalMaxSpeed;
+			transform.GetChild(0).GetComponent("JetSkates").TurnOffJets();
+		}
 	} else if(HasHeavyPowerUp){
 		// probably do nothing since this is more a status than an ability
 	}
