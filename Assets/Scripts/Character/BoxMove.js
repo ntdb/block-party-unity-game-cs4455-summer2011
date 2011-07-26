@@ -86,7 +86,7 @@ function OnCollisionEnter (collision : Collision)
 			jumping = false;
 			doubleJumping = false;
 			canMove = true;
-			if(wingsAreActivated) wingsAreActivated = false;
+			if(wingsAreActivated) SwitchWings();
 		} else if(collision.gameObject.layer == 9 && jumping && wingsAreActivated){
 			canMove = false;
 		}
