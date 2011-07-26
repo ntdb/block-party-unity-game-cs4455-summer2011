@@ -67,13 +67,10 @@ function Update(){
 					case "Door" : break;
 					case "Bars" : targetGO.GetComponent("BarController").down = false;
 								  break;
-<<<<<<< .mine
 					case "Launcher" : targetGO.GetComponent("Launcher").Deactivate();
 								  break;
-					default :	  Debug.Log("Unknown target GO type: " + targetGOname);
-=======
 					default :	  Debug.Log("Unknown target GO type: " + targetGO.name);
->>>>>>> .r142
+								  break;
 				}
 			}
 		}
