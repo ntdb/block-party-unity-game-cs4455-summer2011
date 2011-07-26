@@ -33,6 +33,9 @@ function OnCollisionEnter(other : Collision){
 				case "Bars": targetGO.GetComponent("BarController").down = true;
 							 break;
 				case "Launcher": targetGO.GetComponent("Launcher").Activate();
+								 break;
+				case "Ramp":  targetGO.GetComponent("RampController").Activate();
+							  break;
 				default:
 							Debug.Log("Unknown target GO type: " + targetGO.name);
 			}
@@ -58,7 +61,6 @@ function Update(){
 		}
 		if(checkForPlayerOffSwitch && !playerIsOnSwitch){
 			timer += Time.deltaTime;
-			Debug.Log(timer);
 			if(timer >= buttonGracePeriod){
 				child.position.y = transform.position.y + 0.2;
 				checkForPlayerOffSwitch = false;
