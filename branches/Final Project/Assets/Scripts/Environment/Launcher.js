@@ -54,7 +54,7 @@ function FixedUpdate(){
 	/*Debug.Log("Angle: " + transform.eulerAngles);
 	Debug.Log("Target: " + targetRotation);
 	Debug.Log("Active?: " + launcherIsActive);*/
-	var angle : float = Mathf.MoveTowardsAngle(transform.eulerAngles.x, targetRotation, activeRotation * 1.5 * Time.deltaTime);
+	var angle : float = Mathf.MoveTowardsAngle(transform.eulerAngles.x, targetRotation, activeRotation * 2 * Time.deltaTime);
 	var rot : Quaternion = Quaternion.Euler(Vector3(angle, 0, 0));
 	rigidbody.MoveRotation(rot);
 	//transform.eulerAngles.x =  angle;
