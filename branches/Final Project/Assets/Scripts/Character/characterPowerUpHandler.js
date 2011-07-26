@@ -15,3 +15,7 @@ function addGlideAbility(){
 function addRocketSkates(){
 	gameObject.GetComponent("BoxMove").GetRocketSkatesPowerUp();
 }
+
+function addHeavyPowerUp(){
+	gameObject.GetComponent("BoxMove").GetHeavyPowerUp();
+}
