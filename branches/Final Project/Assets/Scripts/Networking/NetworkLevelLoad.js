@@ -10,6 +10,9 @@
 var myGuiSkin : GUISkin;
 var level1Name : String;
 var level2Name : String;
+var largeStyle : GUIStyle;
+
+private var loading : boolean;
 
 //Keep track of the last level prefix (increment each time a new level loads)
 private var lastLevelPrefix = 0;
@@ -46,10 +49,14 @@ function OnGUI() {
 		}
 		GUI.Label(new Rect(Screen.width-115,50, 115, 50), "Players: " + (Network.connections.Length+1));
 	}
+	if (loading){
+		GUI.Label( Rect((Screen.width/2)-140,(Screen.height/2)-80, Screen.width, Screen.height), "Loading...", largeStyle);
+	}
 }
 
 @RPC
 function LoadLevel(level : String, levelPrefix : int) {
+	loading = true;
 	lastLevelPrefix = levelPrefix;
 	
 	Network.SetSendingEnabled(0, false);
@@ -73,6 +80,7 @@ function LoadLevel(level : String, levelPrefix : int) {
 	{
 		go[i].SendMessage("OnNetworkLoadedLevel",SendMessageOptions.DontRequireReceiver);
 	}
+	loading = false;
 }
 
 function OnDisconnectedFromServer() {
