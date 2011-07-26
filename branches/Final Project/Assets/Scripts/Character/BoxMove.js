@@ -86,6 +86,7 @@ function OnCollisionEnter (collision : Collision)
 			jumping = false;
 			doubleJumping = false;
 			canMove = true;
+			if(wingsAreActivated) wingsAreActivated = false;
 		} else if(collision.gameObject.layer == 9 && jumping && wingsAreActivated){
 			canMove = false;
 		}
@@ -129,7 +130,7 @@ function Update(){
 			}
 		}
 		
-		if(jump && (groundedCounter > 0 || grounded) && jumping == false && !heavyIsActivated /*!HasHeavyPowerUp*/)
+		if(jump && (groundedCounter > 0 || grounded) && jumping == false && !heavyIsActivated)
 		{
 			rigidbody.velocity.y += jumpSpeed;
 			groundedCounter = 0;
@@ -213,7 +214,6 @@ function GetGlidePowerUp(){
 	HasGlidePowerUp = true;
 	HasRocketSkates = false;
 	HasHeavyPowerUp = false;
-	heavyIsActivated = false;
 	transform.rotation = Quaternion.identity;
 	collider.sharedMaterial = boxRollMaterial;
 	collider.size.y = 1;
@@ -224,14 +224,14 @@ function GetGlidePowerUp(){
 	}
 	var wings = Network.Instantiate(Wings, Vector3(transform.position.x, transform.position.y - 0.5, transform.position.z), transform.rotation, 4);
 	wings.transform.parent = transform;
-	gameObject.renderer.material.color = coloration;
+	if(heavyIsActivated) SwitchHeavy();
+	if(skatesAreActivated) SwitchSkates();
 }
 
 function GetRocketSkatesPowerUp(){
 	HasRocketSkates = true;
 	HasGlidePowerUp = false;
 	HasHeavyPowerUp = false;
-	heavyIsActivated = false;
 	transform.rotation = Quaternion.identity;
 	transform.position = Vector3(transform.position.x, transform.position.y + 0.5, transform.position.z);
 	collider.sharedMaterial = skatesMaterial;
@@ -244,7 +244,8 @@ function GetRocketSkatesPowerUp(){
 	skates.transform.parent = transform;
 	rigidbody.angularVelocity == Vector3(0,0,0);
 	rigidbody.constraints = RigidbodyConstraints.FreezeRotationX || RigidbodyConstraints.FreezeRotationZ;
-	gameObject.renderer.material.color = coloration;
+	if(heavyIsActivated) SwitchHeavy();
+	if(wingsAreActivated) SwitchWings();
 }
 
 function GetHeavyPowerUp(){
@@ -258,26 +259,47 @@ function GetHeavyPowerUp(){
 	if(transform.childCount > 0){
 		Network.Destroy(transform.GetChild(0).gameObject);
 	}
-//	gameObject.renderer.material.color = Color.gray;
+	if(wingsAreActivated) SwitchWings();
+	if(skatesAreActivated) SwitchSkates();
 }
 
 function DoSpecialAction(){
 	if(HasGlidePowerUp){
+		SwitchWings();
+	} else if(HasRocketSkates){
+		SwitchSkates();
+	} else if(HasHeavyPowerUp){
+		SwitchHeavy();
+	}
+}
+
+function SwitchWings(){
+	if(HasGlidePowerUp){
 		if(!wingsAreActivated){
 			wingsAreActivated = true;
-			transform.GetChild(0).GetComponent("WingsController").ActivateWings();
 			rigidbody.useGravity = false;
 			transform.rotation = Quaternion.identity;
 			rigidbody.angularVelocity = Vector3(0,0,0);
 			rigidbody.constraints = RigidbodyConstraints.FreezePositionY || RigidbodyConstraints.FreezeRotationX || RigidbodyConstraints.FreezeRotationZ;
+			transform.GetChild(0).GetComponent("WingsController").ActivateWings();
 		} else {
 			wingsAreActivated = false;
 			Debug.Log("deactivating");
-			transform.GetChild(0).GetComponent("WingsController").DeactivateWings();
 			rigidbody.useGravity = true;
 			rigidbody.constraints = RigidbodyConstraints.None;
+			transform.GetChild(0).GetComponent("WingsController").DeactivateWings();
 		}
-	} else if(HasRocketSkates){
+	} else {
+		wingsAreActivated = false;
+		Debug.Log("deactivating");
+		rigidbody.useGravity = true;
+		rigidbody.constraints = RigidbodyConstraints.None;
+//		transform.GetChild(0).GetComponent("WingsController").DeactivateWings();
+	}
+}
+
+function SwitchSkates(){
+	if(HasRocketSkates){
 		if(!skatesAreActivated){
 			skatesAreActivated = true;
 			transform.GetChild(0).GetComponent("JetSkates").TurnOnJets();
@@ -287,14 +309,27 @@ function DoSpecialAction(){
 			maxSpeed = originalMaxSpeed;
 			transform.GetChild(0).GetComponent("JetSkates").TurnOffJets();
 		}
-	} else if(HasHeavyPowerUp){
+	} else {
+		skatesAreActivated = false;
+		maxSpeed = originalMaxSpeed;
+		transform.GetChild(0).GetComponent("JetSkates").TurnOffJets();
+	}
+}
+
+function SwitchHeavy(){
+	if(HasHeavyPowerUp){
 		if(!heavyIsActivated){
 			heavyIsActivated = true;
+			maxSpeed = originalMaxSpeed/2;
 			gameObject.renderer.material.color = Color.gray;
 		} else {
 			heavyIsActivated = false;
+			maxSpeed = originalMaxSpeed;
 			gameObject.renderer.material.color = coloration;
 		}
-		// probably do nothing since this is more a status than an ability
+	} else {
+		heavyIsActivated = false;
+		maxSpeed = originalMaxSpeed;
+		gameObject.renderer.material.color = coloration;
 	}
 }
