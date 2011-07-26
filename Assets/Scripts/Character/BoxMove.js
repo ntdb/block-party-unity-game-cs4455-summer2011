@@ -27,6 +27,7 @@ private var skatesAreActivated : boolean = false;
 private var originalMaxSpeed : float = 7.0;
 var skatesSpeed : float = 14;
 var HasHeavyPowerUp : boolean = false;
+private var heavyIsActivated : boolean = false;
 
 public var boxRollMaterial : PhysicMaterial;
 public var skatesMaterial : PhysicMaterial;
@@ -116,8 +117,11 @@ function Update(){
 			if(HasRocketSkates){
 				if(!skatesAreActivated)
 					DoSpecialAction();
-			} else if(HasGlidePowerUp)
+			} else if(HasGlidePowerUp) {
 				DoSpecialAction();
+			} else if(HasHeavyPowerUp) {
+				DoSpecialAction();
+			}
 		} else {
 			if(HasRocketSkates){
 				if(skatesAreActivated)
@@ -125,7 +129,7 @@ function Update(){
 			}
 		}
 		
-		if(jump && (groundedCounter > 0 || grounded) && jumping == false && !HasHeavyPowerUp)
+		if(jump && (groundedCounter > 0 || grounded) && jumping == false && !heavyIsActivated /*!HasHeavyPowerUp*/)
 		{
 			rigidbody.velocity.y += jumpSpeed;
 			groundedCounter = 0;
@@ -139,7 +143,7 @@ function Update(){
 			cameraRight();
 		}
 		
-		if(jump && jumping == true && doubleJumping == false && doubleJumpCountdown == 0)
+		if(jump && jumping == true && doubleJumping == false && doubleJumpCountdown == 0 && !heavyIsActivated)
 		{
 			doubleJumping = true;
 			rigidbody.velocity.y += jumpSpeed * 1.2;
@@ -209,6 +213,7 @@ function GetGlidePowerUp(){
 	HasGlidePowerUp = true;
 	HasRocketSkates = false;
 	HasHeavyPowerUp = false;
+	heavyIsActivated = false;
 	transform.rotation = Quaternion.identity;
 	collider.sharedMaterial = boxRollMaterial;
 	collider.size.y = 1;
@@ -226,6 +231,7 @@ function GetRocketSkatesPowerUp(){
 	HasRocketSkates = true;
 	HasGlidePowerUp = false;
 	HasHeavyPowerUp = false;
+	heavyIsActivated = false;
 	transform.rotation = Quaternion.identity;
 	transform.position = Vector3(transform.position.x, transform.position.y + 0.5, transform.position.z);
 	collider.sharedMaterial = skatesMaterial;
@@ -252,7 +258,7 @@ function GetHeavyPowerUp(){
 	if(transform.childCount > 0){
 		Network.Destroy(transform.GetChild(0).gameObject);
 	}
-	gameObject.renderer.material.color = Color.gray;
+//	gameObject.renderer.material.color = Color.gray;
 }
 
 function DoSpecialAction(){
@@ -282,6 +288,13 @@ function DoSpecialAction(){
 			transform.GetChild(0).GetComponent("JetSkates").TurnOffJets();
 		}
 	} else if(HasHeavyPowerUp){
+		if(!heavyIsActivated){
+			heavyIsActivated = true;
+			gameObject.renderer.material.color = Color.gray;
+		} else {
+			heavyIsActivated = false;
+			gameObject.renderer.material.color = coloration;
+		}
 		// probably do nothing since this is more a status than an ability
 	}
 }
