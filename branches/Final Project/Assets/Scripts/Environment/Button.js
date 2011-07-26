@@ -12,7 +12,6 @@ var oneTimeButton : boolean = false;
 var child : Transform;
 var buttonOnSound : AudioSource;
 var buttonOffSound : AudioSource;
-var targetGOname : String;
 var buttonGracePeriod : float = 0.5;
 private var checkForPlayerOffSwitch : boolean = false;
 private var playerIsOnSwitch : boolean = false;
@@ -25,18 +24,16 @@ function OnCollisionEnter(other : Collision){
 		if(Network.isServer){
 			if(!pressed)
 				networkView.RPC("RPCPlayOnSound", RPCMode.All);
-
+				
 			child.position.y = transform.position.y;
 			playerIsOnSwitch = true;
-			switch(targetGOname){
+			switch(targetGO.name){
 				case "Door": targetGO.GetComponent("DoorController").OpenDoor();
 							 break;
 				case "Bars": targetGO.GetComponent("BarController").down = true;
 							 break;
-				case "Gate": targetGO.GetComponent("LaunchController").Launching();
-							 break;
 				default:
-							Debug.Log("Unknown target GO type: " + targetGOname);
+							Debug.Log("Unknown target GO type: " + targetGO.name);
 			}
 		}
 	}
@@ -65,13 +62,11 @@ function Update(){
 				child.position.y = transform.position.y + 0.2;
 				checkForPlayerOffSwitch = false;
 				pressed = false;
-				switch(targetGOname){
+				switch(targetGO.name){
 					case "Door" : break;
-					case "Bars" : targetGO.GetComponent("BarController").down = false);
+					case "Bars" : targetGO.GetComponent("BarController").down = false;
 								  break;
-					case "Launch" : targetGO.GetComponent("LaunchController");
-								 break;
-					default :	  Debug.Log("Unknown target GO type: " + targetGOname);
+					default :	  Debug.Log("Unknown target GO type: " + targetGO.name);
 				}
 			}
 		}
