@@ -25,12 +25,13 @@ function OnCollisionEnter(other : Collision){
 		if(Network.isServer){
 			if(!pressed)
 				networkView.RPC("RPCPlayOnSound", RPCMode.All);
+
 			child.position.y = transform.position.y;
 			playerIsOnSwitch = true;
 			switch(targetGOname){
 				case "Door": targetGO.GetComponent("DoorController").OpenDoor();
 							 break;
-				case "Gate": targetGO.GetComponent("GateController").OpenGate();
+				case "Bars": targetGO.GetComponent("BarController").down = true;
 							 break;
 				case "Gate": targetGO.GetComponent("LaunchController").Launching();
 							 break;
@@ -66,7 +67,7 @@ function Update(){
 				pressed = false;
 				switch(targetGOname){
 					case "Door" : break;
-					case "Gate" : targetGO.GetComponent("GateController").CloseGate();
+					case "Bars" : targetGO.GetComponent("BarController").down = false);
 								  break;
 					case "Launch" : targetGO.GetComponent("LaunchController");
 								 break;
