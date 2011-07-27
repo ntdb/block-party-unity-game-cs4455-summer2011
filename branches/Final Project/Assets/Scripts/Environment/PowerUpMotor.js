@@ -13,13 +13,12 @@ function OnNetworkLoadedLevel(){
 }
 
 @RPC
-function InstantiateVisualCue(name : String){
-	Debug.Log(name);
+function InstantiateVisualCue(name : String){	Debug.Log(name);
 	if(name == "Skates"){
 		var skates = Instantiate(Skates, transform.position + Vector3(-2.649412e-05, -0.4298017, 0.1977248), transform.GetChild(0).rotation);
 		skates.transform.parent = transform.GetChild(0);
 	} else if (name == "Wings"){
-		var wings = Instantiate(Wings, transform.position, transform.GetChild(0).rotation);
+		var wings = Instantiate(Wings, transform.GetChild(0)position, transform.GetChild(0).rotation);
 		wings.transform.localScale = Vector3(1.0,1.0,1.0);
 		wings.transform.parent = transform.GetChild(0);
 		wings.GetComponent("WingsController").ActivateWings();
