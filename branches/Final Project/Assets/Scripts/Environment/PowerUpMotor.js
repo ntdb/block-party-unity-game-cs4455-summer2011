@@ -13,7 +13,7 @@ function OnNetworkLoadedLevel(){
 }
 
 @RPC
-function InstantiateVisualCue(name : String){	Debug.Log(name);
+function InstantiateVisualCue(name : String){
 	if(name == "Skates"){
 		var skates = Instantiate(Skates, transform.position + Vector3(-2.649412e-05, -0.4298017, 0.1977248), transform.GetChild(0).rotation);
 		skates.transform.parent = transform.GetChild(0);
