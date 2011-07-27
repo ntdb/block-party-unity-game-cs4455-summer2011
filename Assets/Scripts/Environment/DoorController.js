@@ -38,7 +38,8 @@ function RPCPlaySound(){
 function FixedUpdate(){
 	if(transform.position.y > targetHeight){
 		transform.position.y -= 0.1;
-		networkView.RPC("RPCPlaySound", RPCMode.All);
+		if(Network.isServer)
+			networkView.RPC("RPCPlaySound", RPCMode.All);
 		if(!triggered){
 			triggered = true;
 			var children = gameObject.GetComponentInChildren(Transform);
@@ -49,6 +50,7 @@ function FixedUpdate(){
 	} 
 	else if(transform.position.y < targetHeight){
 		transform.position.y = targetHeight;
-		networkView.RPC("RPCPlaySound", RPCMode.All);
+		if(Network.isServer)
+			networkView.RPC("RPCPlaySound", RPCMode.All);
 	}
 }
