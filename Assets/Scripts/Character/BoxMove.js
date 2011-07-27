@@ -45,7 +45,7 @@ private var leftMoveDirection;
 private var rightMoveDirection;
 private var leftTurnDirection;
 private var rightTurnDirection;
-static var maxSpeed = 7;
+static var maxSpeed = 25;
 private var doubleJumping : boolean = false;
 private var doubleJumpCountdown = 0;
 private var quaternionCountdown = 15;

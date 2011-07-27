@@ -1,12 +1,12 @@
-public var startPosition : Vector3;
-public var destinationPosition : Vector3;
-public var targetPosition : Vector3;
+public var startPosition : float;
+public var destinationPosition : float;
+public var targetPosition : float;
 public var xAxisMovement : boolean = true;
-public var isPositiveMoveDirection : boolean = true;
 public var moveSpeed : float = 3.0;
 private var waitingAtDestinationPosition : boolean = false;
 private var pauseTimer : float = 0.0;
 public var pauseDuration : float = 2.0;
+private var act : boolean = false;
 
 function Activate(){
 	if(Network.isServer)
@@ -16,38 +16,37 @@ function Activate(){
 @RPC
 function RPCActivateInternal(){
 	targetPosition = destinationPosition;
+	act = true;
 }
 
 function Update () {
+	Debug.Log("Hello");
 	if(waitingAtDestinationPosition){
 		pauseTimer += Time.deltaTime;
 		if(pauseTimer >= pauseDuration){
 			waitingAtDestinationPosition = false;
 			pauseTimer = 0.0;
+			act = true;
 		}
-	} else {
+	} else if (act) {
 		if(xAxisMovement){
-			if((Mathf.Abs(transform.position.x - targetPosition.x) > 0.2)){
-				if(transform.position.x > targetPosition.x)
-					transform.position.x -= Time.deltaTime * moveSpeed;
-				else
-					transform.position.x += Time.deltaTime * moveSpeed;
+			if(!Mathf.Approximately(transform.position.x, targetPosition)) {
+				transform.position.x = Mathf.MoveTowards(transform.position.x, targetPosition, moveSpeed * Time.deltaTime);
 			} else {
 				if(targetPosition == destinationPosition){
 					waitingAtDestinationPosition = true;
 					targetPosition = startPosition;
+					act = false;
 				}
 			}
 		} else { // zAxisMovement
-			if(Mathf.Abs(transform.position.z - targetPosition.z) > 0.2){
-				if(transform.position.z > targetPosition.z)
-					transform.position.z -= Time.deltaTime * moveSpeed;
-				else
-					transform.position.z += Time.deltaTime * moveSpeed;
+			if(!Mathf.Approximately(transform.position.z, targetPosition)) {
+				transform.position.z = Mathf.MoveTowards(transform.position.z, targetPosition, moveSpeed * Time.deltaTime);
 			} else {
 				if(targetPosition == destinationPosition){
 					waitingAtDestinationPosition = true;
 					targetPosition = startPosition;
+					act = false;
 				}
 			}
 		}
