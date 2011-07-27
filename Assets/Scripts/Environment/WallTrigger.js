@@ -13,6 +13,6 @@ function OnTriggerEnter(other : Collider) {
 		for (var i : Rigidbody in rigids) {
 			i.isKinematic = false;
 		}
-		Network.Destroy(gameObject.GetComponent(BoxCollider));
+		Destroy(gameObject.GetComponent(BoxCollider));
 	}
 }
