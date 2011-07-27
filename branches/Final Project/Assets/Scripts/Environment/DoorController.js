@@ -36,8 +36,8 @@ function RPCPlaySound(){
 }
 
 function FixedUpdate(){
-	if(transform.position.y > targetHeight){
-		transform.position.y -= 0.1;
+	if(transform.position.y > targetHeight) {
+		transform.position.y = Mathf.MoveTowards(transform.position.y, targetHeight, 10 * Time.deltaTime);
 		if(Network.isServer)
 			networkView.RPC("RPCPlaySound", RPCMode.All);
 		if(!triggered){
@@ -48,8 +48,11 @@ function FixedUpdate(){
 			}
 		}
 	} 
-	else if(transform.position.y < targetHeight){
-		transform.position.y = targetHeight;
+	else if (doorIsOpened && transform.position.y == targetHeight) {
+		doorIsOpened = false;
+		Debug.Log("Height: " + transform.position.y);
+		Debug.Log("Target: " + targetHeight);
+		Debug.Log("Finished");
 		if(Network.isServer)
 			networkView.RPC("RPCPlaySound", RPCMode.All);
 	}
