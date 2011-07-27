@@ -1,4 +1,5 @@
 var speed = 1;
+var pickupSound : AudioSource;
 public var PowerUpName : String;
 public var Skates : GameObject;
 public var Wings : GameObject;
@@ -58,6 +59,7 @@ function OnCollisionEnter(collision : Collision){
 								Debug.Log("Unknown ability '" + PowerUpName + "' - no power up granted"); break;
 			}
 			if(Network.isServer){
+				networkView.RPC("RPCPlayPickupSound", RPCMode.All);
 				networkView.RPC("moveToHoldingArea", RPCMode.AllBuffered);
 			}
 		}
@@ -67,4 +69,10 @@ function OnCollisionEnter(collision : Collision){
 @RPC
 function moveToHoldingArea(){
 	transform.position.x = 11000;
+}
+
+@RPC
+function RPCPlayPickupSound()
+{
+	pickupSound.Play();
 }
