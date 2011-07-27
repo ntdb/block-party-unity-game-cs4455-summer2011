@@ -10,7 +10,7 @@
 
 var barSpeed = 12;
 private var down : boolean = false;
-private var down2 : boolean = false;
+private var secondDown : boolean = false;
 private var startingPos;
 private var timer = 0;
 var gateSound : AudioSource;
@@ -23,7 +23,7 @@ function Awake() {
 }
 
 function Update () {
-	if(!down) {
+	if(!down && !secondDown) {
 		timer = 0;
 	} else {
 		timer++;
@@ -32,12 +32,15 @@ function Update () {
 	for(i=0; i<transform.childCount; i++) {
 		var thisChild : Transform = transform.GetChild(i);
 	
-		if((!(down && down2)) && thisChild.position.y < startingPos[i]) {
+		if((!secondDown) && thisChild.position.y < startingPos[i]) {
 			transform.GetChild(i).position.y += barSpeed * Time.deltaTime;
 		}
-		else if((down || down2) && thisChild.position.y - startingPos[i] > -(thisChild.lossyScale.y) * 2 && timer > 30 * (i % 2)) {
-			transform.GetChild(i).position.y -= barSpeed * Time.deltaTime;
+		else if((!secondDown) && thisChild.position.y < startingPos[i]) {
+			transform.GetChild(i).position.y += barSpeed * Time.deltaTime;
 		}
+		else if(secondDown || down && thisChild.position.y - startingPos[i] > -(thisChild.lossyScale.y) * 2 && timer > 30 * (i % 2)) {
+			transform.GetChild(i).position.y -= barSpeed * Time.deltaTime;
+		}		
 	}
 }
 
@@ -63,26 +66,26 @@ function RPCUp() {
 	down = false;
 }
 
-function Down2() {
+function SecondDown() {
 	if(Network.isServer) {
-		networkView.RPC("RPCDown2", RPCMode.AllBuffered);
+		networkView.RPC("RPCSecondDown", RPCMode.AllBuffered);
 	}
 }
 
-function Up2() {
+function SecondUp() {
 	if(Network.isServer) {
-		networkView.RPC("RPCUp2", RPCMode.AllBuffered);
+		networkView.RPC("RPCSecondUp", RPCMode.AllBuffered);
 	}
 }
 
 @RPC
-function RPCDown2() {
-	down2 = true;
+function RPCSecondDown() {
+	secondDown = true;
 }
 
 @RPC
-function RPCUp2() {
-	down2 = false;
+function RPCSecondUp() {
+	secondDown = false;
 }
 
 @RPC
