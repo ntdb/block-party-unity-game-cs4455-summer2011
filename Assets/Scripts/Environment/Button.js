@@ -32,7 +32,7 @@ function OnCollisionEnter(other : Collision){
 							 break;
 				case "Bars": targetGO.GetComponent("BarController").Down();
 							 break;
-				case "Launcher": targetGO.GetComponent("Launcher").Activate();
+				case "Launcher": targetGO.GetComponent("LauncherController").Activate();
 								 break;
 				case "Ramp":  if(Network.isServer){ targetGO.GetComponent("RampController").Activate(); }
 							  break;
@@ -69,7 +69,7 @@ function Update(){
 					case "Door" : break;
 					case "Bars" : targetGO.GetComponent("BarController").Up();
 								  break;
-					case "Launcher" : targetGO.GetComponent("Launcher").Deactivate();
+					case "Launcher" : targetGO.GetComponent("LauncherController").Deactivate();
 								  break;
 					case "Ramp" : targetGO.GetComponent("RampController").Activate();
 								  break;
