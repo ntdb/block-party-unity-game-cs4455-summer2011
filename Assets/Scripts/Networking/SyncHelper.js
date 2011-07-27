@@ -30,6 +30,6 @@ function RPCSwitchWings(player : NetworkViewID, activating : boolean){
 function RPCGetWings(player : NetworkViewID){
 	var other : Transform = NetworkView.Find(player).transform;
 	other.rigidbody.rotation = Quaternion.identity;
-	var wings : GameObject = Instantiate(Wings, Vector3(other.position.x, other.position.y - 0.5, other.position.z), other.rotation);
+	var wings : GameObject = Instantiate(Wings, Vector3(other.rigidbody.position.x, other.rigidbody.position.y - 0.5, other.rigidbody.position.z), other.rigidbody.rotation);
 	wings.transform.parent = other;
 }
