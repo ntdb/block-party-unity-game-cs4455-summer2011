@@ -32,10 +32,7 @@ function Update () {
 	for(i=0; i<transform.childCount; i++) {
 		var thisChild : Transform = transform.GetChild(i);
 	
-		if((!secondDown) && thisChild.position.y < startingPos[i]) {
-			transform.GetChild(i).position.y += barSpeed * Time.deltaTime;
-		}
-		else if((!secondDown) && thisChild.position.y < startingPos[i]) {
+		if((!down && !secondDown) && thisChild.position.y < startingPos[i]) {
 			transform.GetChild(i).position.y += barSpeed * Time.deltaTime;
 		}
 		else if(secondDown || down && thisChild.position.y - startingPos[i] > -(thisChild.lossyScale.y) * 2 && timer > 30 * (i % 2)) {
