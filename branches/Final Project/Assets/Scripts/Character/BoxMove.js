@@ -52,11 +52,10 @@ public var camRot : float = 0.0;
 public var lockControls : boolean = false;
 private var gliding : boolean = false;
 private var coloration : Color = Color(.1451, .3843, .7255, 1);
+var syncHelper : SyncHelper;
 
-// Don't let the Physics Engine rotate this physics object so it doesn't fall over when running
 function Awake ()
 {
-	Destroy(GetComponent("CharacterController"));
 	if(!networkView.isMine){
 		enabled = false;
 	}
@@ -68,6 +67,7 @@ function Awake ()
 	}
 	
 	Cam = GameObject.FindWithTag("MainCamera");
+	syncHelper = GameObject.Find("GUIObject").GetComponent(SyncHelper);
 }
 
 //locks the controls
@@ -118,7 +118,7 @@ function Update(){
 			if(HasRocketSkates){
 				if(!skatesAreActivated)
 					DoSpecialAction();
-			} else if(HasGlidePowerUp) {
+			} else if(HasGlidePowerUp && jumping) {
 				DoSpecialAction();
 			} else if(HasHeavyPowerUp) {
 				DoSpecialAction();
@@ -222,7 +222,8 @@ function GetGlidePowerUp(){
 	if(transform.childCount > 0){
 		Network.Destroy(transform.GetChild(0).gameObject);
 	}
-	var wings = Network.Instantiate(Wings, Vector3(transform.position.x, transform.position.y - 0.5, transform.position.z), transform.rotation, 4);
+	var wings = Instantiate(Wings, Vector3(transform.position.x, transform.position.y - 0.5, transform.position.z), transform.rotation);
+	syncHelper.getWings(networkView.viewID);
 	wings.transform.parent = transform;
 	if(heavyIsActivated) SwitchHeavy();
 	if(skatesAreActivated) SwitchSkates();
@@ -278,21 +279,22 @@ function SwitchWings(){
 		if(!wingsAreActivated){
 			wingsAreActivated = true;
 			rigidbody.useGravity = false;
+			transform.GetChild(0).GetComponent("WingsController").ActivateWings();
+			syncHelper.switchMyWings(networkView.viewID, wingsAreActivated);
 			transform.rotation = Quaternion.identity;
 			rigidbody.angularVelocity = Vector3(0,0,0);
 			rigidbody.constraints = RigidbodyConstraints.FreezePositionY || RigidbodyConstraints.FreezeRotationX || RigidbodyConstraints.FreezeRotationZ;
-			transform.GetChild(0).GetComponent("WingsController").ActivateWings();
 		} else {
 			wingsAreActivated = false;
 			rigidbody.useGravity = true;
 			rigidbody.constraints = RigidbodyConstraints.None;
 			transform.GetChild(0).GetComponent("WingsController").DeactivateWings();
+			syncHelper.switchMyWings(networkView.viewID, wingsAreActivated);
 		}
 	} else {
 		wingsAreActivated = false;
 		rigidbody.useGravity = true;
 		rigidbody.constraints = RigidbodyConstraints.None;
-//		transform.GetChild(0).GetComponent("WingsController").DeactivateWings();
 	}
 }
 
