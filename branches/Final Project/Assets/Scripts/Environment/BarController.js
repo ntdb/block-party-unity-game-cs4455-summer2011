@@ -10,6 +10,7 @@
 
 var barSpeed = 12;
 private var down : boolean = false;
+private var down2 : boolean = false;
 private var startingPos;
 private var timer = 0;
 var gateSound : AudioSource;
@@ -31,10 +32,10 @@ function Update () {
 	for(i=0; i<transform.childCount; i++) {
 		var thisChild : Transform = transform.GetChild(i);
 	
-		if(!down && thisChild.position.y < startingPos[i]) {
+		if((!(down && down2)) && thisChild.position.y < startingPos[i]) {
 			transform.GetChild(i).position.y += barSpeed * Time.deltaTime;
 		}
-		else if(down && thisChild.position.y - startingPos[i] > -(thisChild.lossyScale.y) * 2 && timer > 30 * (i % 2)) {
+		else if((down || down2) && thisChild.position.y - startingPos[i] > -(thisChild.lossyScale.y) * 2 && timer > 30 * (i % 2)) {
 			transform.GetChild(i).position.y -= barSpeed * Time.deltaTime;
 		}
 	}
@@ -60,6 +61,28 @@ function RPCDown() {
 @RPC
 function RPCUp() {
 	down = false;
+}
+
+function Down2() {
+	if(Network.isServer) {
+		networkView.RPC("RPCDown2", RPCMode.AllBuffered);
+	}
+}
+
+function Up2() {
+	if(Network.isServer) {
+		networkView.RPC("RPCUp2", RPCMode.AllBuffered);
+	}
+}
+
+@RPC
+function RPCDown2() {
+	down2 = true;
+}
+
+@RPC
+function RPCUp2() {
+	down2 = false;
 }
 
 @RPC
