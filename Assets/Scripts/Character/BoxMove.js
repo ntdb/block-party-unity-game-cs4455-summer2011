@@ -172,7 +172,6 @@ function FixedUpdate ()
 			if(vertical != 0) { //moving forward or backward
 				rigidbody.AddForceAtPosition(vertical > 0 ? forwardMoveDirection : backMoveDirection, transform.position, ForceMode.VelocityChange);
 				if(wingsAreActivated || HasRocketSkates){
-					Debug.Log("Hello");
 					rigidbody.rotation = Quaternion.Slerp(rigidbody.rotation, Quaternion.LookRotation(vertical > 0 ? forwardMoveDirection : backMoveDirection), Time.deltaTime * 10);
 				}
 			}
