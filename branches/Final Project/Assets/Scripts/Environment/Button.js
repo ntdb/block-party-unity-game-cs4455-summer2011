@@ -62,6 +62,9 @@ function Update(){
 		if(checkForPlayerOffSwitch && !playerIsOnSwitch){
 			timer += Time.deltaTime;
 			if(timer >= buttonGracePeriod){
+				if(Network.isServer){
+					networkView.RPC("RPCPlayOffSound", RPCMode.All);
+				}
 				child.position.y = transform.position.y + 0.2;
 				checkForPlayerOffSwitch = false;
 				pressed = false;
@@ -87,4 +90,12 @@ function RPCPlayOnSound(){
 		buttonOnSound.Play();
 		pressed = true;
 	}
+}
+
+@RPC 
+function RPCPlayOffSound() 
+{
+	if(!oneTimeButton){
+		buttonOffSound.Play();
+	}	
 }
