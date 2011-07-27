@@ -11,6 +11,7 @@ var myGuiSkin : GUISkin;
 var level1Name : String;
 var level2Name : String;
 var level3Name : String;
+var level4Name : String;
 var largeStyle : GUIStyle;
 
 private var loading : boolean;
@@ -94,6 +95,8 @@ function LoadNextLevel(){
 		networkView.RPC("LoadLevel", RPCMode.AllBuffered, level2Name, lastLevelPrefix + 1);
 	else if(lastLevelPrefix == 2)
 		networkView.RPC("LoadLevel", RPCMode.AllBuffered, level3Name, lastLevelPrefix + 1);
+	else if(lastLevelPrefix == 3)
+		networkView.RPC("LoadLevel", RPCMode.AllBuffered, level4Name, lastLevelPrefix + 1);
 }
 
 @script RequireComponent(NetworkView)
