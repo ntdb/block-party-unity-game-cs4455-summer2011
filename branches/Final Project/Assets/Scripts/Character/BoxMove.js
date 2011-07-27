@@ -171,13 +171,14 @@ function FixedUpdate ()
 		if(Mathf.Sqrt(Mathf.Pow(rigidbody.velocity.x,2) + Mathf.Pow(rigidbody.velocity.z,2)) < maxSpeed && canMove) {
 			if(vertical != 0) { //moving forward or backward
 				rigidbody.AddForceAtPosition(vertical > 0 ? forwardMoveDirection : backMoveDirection, transform.position, ForceMode.VelocityChange);
-				if(wingsAreActivated || skatesAreActivated){
+				if(wingsAreActivated || HasRocketSkates){
+					Debug.Log("Hello");
 					rigidbody.rotation = Quaternion.Slerp(rigidbody.rotation, Quaternion.LookRotation(vertical > 0 ? forwardMoveDirection : backMoveDirection), Time.deltaTime * 10);
 				}
 			}
 			if(horizontal != 0) { //moving right or left
 				rigidbody.AddForceAtPosition(horizontal > 0 ? rightMoveDirection : leftMoveDirection, transform.position, ForceMode.VelocityChange);
-				if(wingsAreActivated || skatesAreActivated){
+				if(wingsAreActivated || HasRocketSkates){
 					rigidbody.rotation = Quaternion.Slerp(rigidbody.rotation, Quaternion.LookRotation(horizontal > 0 ? rightMoveDirection : leftMoveDirection), Time.deltaTime * 10);
 				}
 // for turning with the skates
