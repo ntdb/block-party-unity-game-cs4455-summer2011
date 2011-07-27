@@ -43,6 +43,8 @@ private var forwardMoveDirection;
 private var backMoveDirection;
 private var leftMoveDirection;
 private var rightMoveDirection;
+private var leftTurnDirection;
+private var rightTurnDirection;
 static var maxSpeed = 7;
 private var doubleJumping : boolean = false;
 private var doubleJumpCountdown = 0;
@@ -64,6 +66,8 @@ function Awake ()
 		backMoveDirection = Vector3(0, 0, -cubeSpeed);
 		leftMoveDirection = Vector3(-cubeSpeed, 0, 0);
 		rightMoveDirection = Vector3(cubeSpeed, 0, 0);
+		leftTurnDirection = Vector3(0, -cubeSpeed, 0);
+		rightTurnDirection = Vector3(0, cubeSpeed, 0);
 	}
 	
 	Cam = GameObject.FindWithTag("MainCamera");
@@ -176,13 +180,20 @@ function FixedUpdate ()
 				if(wingsAreActivated || skatesAreActivated){
 					rigidbody.rotation = Quaternion.Slerp(rigidbody.rotation, Quaternion.LookRotation(horizontal > 0 ? rightMoveDirection : leftMoveDirection), Time.deltaTime * 10);
 				}
+// for turning with the skates
+/*				if(skatesAreActivated){
+					rigidbody.rotation = Quaternion.Slerp(rigidbody.rotation, 
+					Quaternion.LookRotation(horizontal > 0 ? leftMoveDirection | leftTurnDirection : rightMoveDirection | rightTurnDirection), 
+					Time.deltaTime * 10);
+//					transform.LookAt(horizontal > 0 ? rightTurnDirection : leftTurnDirection);
+				}*/
 			}
 		}
-		
 		if(groundedCounter > 0) groundedCounter--;
 		if(doubleJumpCountdown > 0) doubleJumpCountdown--;
 	}
 }
+
 function OnGUI(){
 	GUI.skin = myGuiSkin;
 	if(!partner && Network.isServer && requirePartner){
@@ -244,7 +255,8 @@ function GetRocketSkatesPowerUp(){
 	var skates = Network.Instantiate(Skates, transform.position, transform.rotation, 4);
 	skates.transform.parent = transform;
 	rigidbody.angularVelocity == Vector3(0,0,0);
-	rigidbody.constraints = RigidbodyConstraints.FreezeRotationX || RigidbodyConstraints.FreezeRotationZ;
+	rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+	
 	if(heavyIsActivated) SwitchHeavy();
 	if(wingsAreActivated) SwitchWings();
 }
@@ -302,15 +314,19 @@ function SwitchSkates(){
 	if(HasRocketSkates){
 		if(!skatesAreActivated){
 			skatesAreActivated = true;
+			rigidbody.useGravity = false;
+			maxSpeed = skatesSpeed;
 			transform.GetChild(0).GetComponent("JetSkates").TurnOnJets();
 			transform.rotation = Quaternion.identity;
 		} else {
 			skatesAreActivated = false;
+			rigidbody.useGravity = true;
 			maxSpeed = originalMaxSpeed;
 			transform.GetChild(0).GetComponent("JetSkates").TurnOffJets();
 		}
 	} else {
 		skatesAreActivated = false;
+		rigidbody.useGravity = true;
 		maxSpeed = originalMaxSpeed;
 		transform.GetChild(0).GetComponent("JetSkates").TurnOffJets();
 	}
