@@ -34,7 +34,7 @@ function OnCollisionEnter(other : Collision){
 							 break;
 				case "Launcher": targetGO.GetComponent("LauncherController").Activate();
 								 break;
-				case "Ramp":  if(Network.isServer){ targetGO.GetComponent("RampController").Activate(); }
+				case "Ramp":  targetGO.GetComponent("RampController").Activate();
 							  break;
 				default:
 							Debug.Log("Unknown target GO type: " + targetGO.name);
