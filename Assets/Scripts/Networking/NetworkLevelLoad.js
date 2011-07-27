@@ -10,6 +10,7 @@
 var myGuiSkin : GUISkin;
 var level1Name : String;
 var level2Name : String;
+var level3Name : String;
 var largeStyle : GUIStyle;
 
 private var loading : boolean;
@@ -91,6 +92,8 @@ function OnDisconnectedFromServer() {
 function LoadNextLevel(){
 	if(lastLevelPrefix == 1)
 		networkView.RPC("LoadLevel", RPCMode.AllBuffered, level2Name, lastLevelPrefix + 1);
+	else if(lastLevelPrefix == 2)
+		networkView.RPC("LoadLevel", RPCMode.AllBuffered, level3Name, lastLevelPrefix + 1);
 }
 
 @script RequireComponent(NetworkView)
