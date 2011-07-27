@@ -284,14 +284,12 @@ function SwitchWings(){
 			transform.GetChild(0).GetComponent("WingsController").ActivateWings();
 		} else {
 			wingsAreActivated = false;
-			Debug.Log("deactivating");
 			rigidbody.useGravity = true;
 			rigidbody.constraints = RigidbodyConstraints.None;
 			transform.GetChild(0).GetComponent("WingsController").DeactivateWings();
 		}
 	} else {
 		wingsAreActivated = false;
-		Debug.Log("deactivating");
 		rigidbody.useGravity = true;
 		rigidbody.constraints = RigidbodyConstraints.None;
 //		transform.GetChild(0).GetComponent("WingsController").DeactivateWings();
