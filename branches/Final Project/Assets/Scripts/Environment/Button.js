@@ -32,7 +32,7 @@ function OnCollisionEnter(other : Collision){
 							 break;
 				case "Bars": targetGO.GetComponent("BarController").Down();
 							 break;
-				case "Launcher": targetGO.GetComponent("Launcher").Activate();
+				case "Launcher": targetGO.GetComponent("LauncherController").Activate();
 								 break;
 				case "Ramp":  targetGO.GetComponent("RampController").Activate();
 							  break;
