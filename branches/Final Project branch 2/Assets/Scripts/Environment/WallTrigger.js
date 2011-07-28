@@ -8,7 +8,7 @@
 // Tyler Meehan
 
 function OnTriggerEnter(other : Collider) {
-	if (other.CompareTag("Player") && other.gameObject.GetComponent("BoxMove").HasHeavyPowerUp == true) {
+	if (other.CompareTag("Player") && other.gameObject.GetComponent("BoxMove").heavyIsActivated == true) {
 		var rigids : Component[] = gameObject.GetComponentsInChildren(Rigidbody);
 		for (var i : Rigidbody in rigids) {
 			i.isKinematic = false;

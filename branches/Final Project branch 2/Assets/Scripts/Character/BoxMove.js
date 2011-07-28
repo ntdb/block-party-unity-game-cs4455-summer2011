@@ -27,7 +27,7 @@ private var skatesAreActivated : boolean = false;
 private var originalMaxSpeed : float = 7.0;
 var skatesSpeed : float = 25;
 var HasHeavyPowerUp : boolean = false;
-private var heavyIsActivated : boolean = false;
+var heavyIsActivated : boolean = false;
 
 public var boxRollMaterial : PhysicMaterial;
 public var skatesMaterial : PhysicMaterial;
