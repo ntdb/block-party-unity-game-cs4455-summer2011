@@ -12,7 +12,9 @@ function Update () {
 }
 
 function OnPlayerDisconnected (player : NetworkPlayer) {
-	if(!NetworkView.IsMine) {
-		Destroy(GameObject);
+	if(!networkView.isMine) {
+		Destroy(this);
 	}
 }
+
+@script RequireComponent(NetworkView)
