@@ -8,11 +8,23 @@
 // Tyler Meehan
 
 function OnTriggerEnter(other : Collider) {
-	if (other.CompareTag("Player") && other.gameObject.GetComponent("BoxMove").heavyIsActivated == true) {
-		var rigids : Component[] = gameObject.GetComponentsInChildren(Rigidbody);
-		for (var i : Rigidbody in rigids) {
-			i.isKinematic = false;
+	if(networkView.isMine){
+		if (other.CompareTag("Player") && other.gameObject.GetComponent("BoxMove").heavyIsActivated == true) {
+			networkView.RPC("tellServerToLoosenWall", RPCMode.Server);
 		}
-		Destroy(gameObject.GetComponent(BoxCollider));
 	}
+}
+
+@RPC
+function tellServerToLoosenWall(){
+	networkView.RPC("loosenWall", RPCMode.AllBuffered);
+}
+
+@RPC
+function loosenWall(){
+	var rigids : Component[] = gameObject.GetComponentsInChildren(Rigidbody);
+	for (var i : Rigidbody in rigids) {
+		i.isKinematic = false;
+	}
+	Destroy(gameObject.GetComponent(BoxCollider));
 }
