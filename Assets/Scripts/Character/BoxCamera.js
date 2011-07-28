@@ -11,8 +11,8 @@ var target : Transform;
 var player : BoxMove;
 private var yRot : float = 0;
 var distance = 10.0;
-private var height : float = 5;
-private var maxHeight = 4;
+private var height : float = 3;
+private var maxHeight = 5;
 private var minHeight = 3;
 
 function LateUpdate () {
@@ -30,13 +30,8 @@ function LateUpdate () {
 			var position = rotation * Vector3(0.0, 0.0, -distance) + target.position;
 			
 			var diff = (transform.position.y - target.position.y);
-			//Debug.Log(diff);
-			if(diff > maxHeight)
-				height -= Mathf.Abs(diff)/15.0;
-			else if(diff < minHeight)
-				height += Mathf.Abs(diff)/15.0;
 			
-			position.y = height;
+			position.y = Mathf.MoveTowards(transform.position.y, target.position.y + minHeight, 50 * Time.deltaTime);;
 			
 			transform.position = position;
 			transform.rotation = rotation;
