@@ -277,7 +277,6 @@ function DoSpecialAction(){
 function SwitchWings(){
 	if(HasGlidePowerUp){
 		if(!wingsAreActivated){
-			Debug.Log("activating wings");
 			wingsAreActivated = true;
 			rigidbody.useGravity = false;
 			transform.GetChild(1).GetComponent("WingsController").ActivateWings();

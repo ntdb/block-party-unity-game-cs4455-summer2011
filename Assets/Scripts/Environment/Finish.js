@@ -25,6 +25,7 @@ var greenLight1 : GameObject;
 var greenLight2 : GameObject;
 var normalDuration : float = 3.0;
 var finishSound : AudioSource;
+var finishSoundLong : AudioSource;
 
 private var soundPlayedOnce = false;
 private var soundPlayedTwice = false;
@@ -42,7 +43,7 @@ function OnCollisionEnter(collisionInfo: Collision){
 		else
 		{
 			if (!soundPlayedTwice){
-				networkView.RPC("RPCPlaySound", RPCMode.All);
+				networkView.RPC("RPCPlayFinalSound", RPCMode.All);
 				soundPlayedTwice = true;
 			}
 			networkView.RPC("BothPlayersAreTouching", RPCMode.AllBuffered);
@@ -70,6 +71,13 @@ function BothPlayersAreTouching(){
 function RPCPlaySound(){
 	if (!finishSound.isPlaying){
 		finishSound.Play();
+	}
+}
+
+@RPC
+function RPCPlayFinalSound(){
+	if (!finishSoundLong.isPlaying){
+		finishSoundLong.Play();
 	}
 }
 
