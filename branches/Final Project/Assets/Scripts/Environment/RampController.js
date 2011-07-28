@@ -20,7 +20,6 @@ function RPCActivateInternal(){
 }
 
 function Update () {
-	Debug.Log("Hello");
 	if(waitingAtDestinationPosition){
 		pauseTimer += Time.deltaTime;
 		if(pauseTimer >= pauseDuration){
