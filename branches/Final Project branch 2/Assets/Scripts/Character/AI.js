@@ -14,6 +14,7 @@ var triggerDistance : int = 12;
 var lcornerbound : Vector2;
 var rcornerbound : Vector2;
 var gridSpace : int = 5;
+private var storyplane : GameObject;
 
 // These variables are there for use by the script and don't need to be edited
 private var gridSize : float;
@@ -235,7 +236,9 @@ function OnCollisionEnter (collision : Collision)
 	if(collision.gameObject.layer == 0){
 		grounded = true;
 	} else if (collision.gameObject.layer == 11 && Network.isServer) {
-			Network.Destroy(collectible);
+		Network.Destroy(collectible);
+		storyplane = GameObject.Find("cover");
+		storyplane.GetComponent("DoorController").OpenDoor();
 	}
 }
 
