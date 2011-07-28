@@ -132,7 +132,7 @@ function ShowGUI() {
 	if (Network.peerType == NetworkPeerType.Disconnected)
 	{
 		//Show start screen text:
-		GUI.Label(new Rect((Screen.width/2)-65,(Screen.height/2)-200,220,100), "Milestone 3: Networking");
+		GUI.Label(new Rect((Screen.width/2)-65,(Screen.height/2)-200,220,100), "BLOCK PARTY");
 		GUI.Label(new Rect((Screen.width/2)-49,(Screen.height/2)-230,220,100), "Skybox Studios");
 		
 		//Start a new server
