@@ -1,10 +1,10 @@
 var coloration : Color = Color(.1451, .3843, .7255, 1);;
-
+@RPC
 function switchMySkates(me : NetworkViewID, activating : boolean){
 	if(networkView.isMine)
 		networkView.RPC("RPCSwitchSkates", RPCMode.OthersBuffered, me, activating);
 }
-
+@RPC
 function switchMyWings(me : NetworkViewID, activating : boolean){
 	if(networkView.isMine)
 		networkView.RPC("RPCSwitchWings", RPCMode.OthersBuffered, me, activating);
