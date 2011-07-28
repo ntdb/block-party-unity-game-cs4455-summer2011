@@ -91,7 +91,7 @@ function OnCollisionEnter (collision : Collision)
 			doubleJumping = false;
 			canMove = true;
 			if(wingsAreActivated) SwitchWings();
-		} else if(collision.gameObject.layer == 9 && jumping && wingsAreActivated){
+		} else if(collision.gameObject.layer == 9 && !grounded && !wingsAreActivated){
 			canMove = false;
 		}
 	}
@@ -239,7 +239,6 @@ function GetRocketSkatesPowerUp(){
 	HasGlidePowerUp = false;
 	HasHeavyPowerUp = false;
 	transform.position = Vector3(transform.position.x, transform.position.y + 0.5, transform.position.z);
-	collider.sharedMaterial = skatesMaterial;
 	collider.size.y = 1.6;
 	collider.center.y = -0.3;
 	rigidbody.angularVelocity == Vector3(0,0,0);
