@@ -157,11 +157,11 @@ function Update(){
 			horizontal = Input.GetAxisRaw("Horizontal"); 
 			vertical = Input.GetAxisRaw("Vertical");
 			
-			if(wingsAreActivated || HasRocketSkates){
+			if((wingsAreActivated || HasRocketSkates) && vertical != 0){
 				rigidbody.rotation = Quaternion.Slerp(rigidbody.rotation, Quaternion.LookRotation(vertical > 0 ? forwardMoveDirection : backMoveDirection), Time.deltaTime * 10);
 			}
 			
-			if(wingsAreActivated || HasRocketSkates){
+			if((wingsAreActivated || HasRocketSkates) && horizontal != 0){
 				rigidbody.rotation = Quaternion.Slerp(rigidbody.rotation, Quaternion.LookRotation(horizontal > 0 ? rightMoveDirection : leftMoveDirection), Time.deltaTime * 10);
 			}
 		}
@@ -277,9 +277,10 @@ function DoSpecialAction(){
 function SwitchWings(){
 	if(HasGlidePowerUp){
 		if(!wingsAreActivated){
+			Debug.Log("activating wings");
 			wingsAreActivated = true;
 			rigidbody.useGravity = false;
-			transform.GetChild(0).GetComponent("WingsController").ActivateWings();
+			transform.GetChild(1).GetComponent("WingsController").ActivateWings();
 			syncHelper.switchMyWings(networkView.viewID, wingsAreActivated);
 			transform.rotation = Quaternion.identity;
 			rigidbody.angularVelocity = Vector3(0,0,0);
@@ -288,7 +289,7 @@ function SwitchWings(){
 			wingsAreActivated = false;
 			rigidbody.useGravity = true;
 			rigidbody.constraints = RigidbodyConstraints.None;
-			transform.GetChild(0).GetComponent("WingsController").DeactivateWings();
+			transform.GetChild(1).GetComponent("WingsController").DeactivateWings();
 			syncHelper.switchMyWings(networkView.viewID, wingsAreActivated);
 		}
 	} else {

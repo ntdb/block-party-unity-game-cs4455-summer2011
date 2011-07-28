@@ -12,9 +12,9 @@ function OnNetworkLoadedLevel(){
 @RPC
 function InstantiateVisualCue(name : String){
 	if(name == "Skates"){
-		transform.GetChild(0).GetComponent("JetSkates").TurnOnJets();
+		transform.GetChild(0).GetChild(0).GetComponent("JetSkates").TurnOnJets();
 	} else if (name == "Wings"){
-		transform.GetChild(0).GetComponent("WingsController").ActivateWings();
+		transform.GetChild(0).GetChild(0).GetComponent("WingsController").ActivateWings();
 	} else if (name == "Heavy"){
 		transform.GetChild(0).renderer.material.color = Color.gray;
 	}
