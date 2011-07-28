@@ -116,7 +116,7 @@ function Update(){
 	if((partner || Network.isClient || !requirePartner) && !lockControls){
 			
 		jump = Input.GetButtonDown("Jump");
-		action = Input.GetButtonDown("Action");
+		action = HasRocketSkates ? Input.GetButton("Action") : Input.GetButtonDown("Action");
 		
 		if(action){
 			if(HasRocketSkates && !skatesAreActivated){
@@ -302,13 +302,13 @@ function SwitchSkates(){
 	if(HasRocketSkates){
 		if(!skatesAreActivated){
 			skatesAreActivated = true;
-			rigidbody.useGravity = false;
+//			rigidbody.useGravity = false;
 			maxSpeed = skatesSpeed;
 			transform.GetChild(0).GetComponent("JetSkates").TurnOnJets();
 			syncHelper.switchMySkates(networkView.viewID, true);
 		} else {
 			skatesAreActivated = false;
-			rigidbody.useGravity = true;
+//			rigidbody.useGravity = true;
 			maxSpeed = originalMaxSpeed;
 			transform.GetChild(0).GetComponent("JetSkates").TurnOffJets();
 			syncHelper.switchMySkates(networkView.viewID, false);
