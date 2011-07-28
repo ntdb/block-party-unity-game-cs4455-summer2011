@@ -265,13 +265,19 @@ function GetHeavyPowerUp(){
 	HasHeavyPowerUp = true;
 	HasRocketSkates = false;
 	HasGlidePowerUp = false;
+	if (transform.childCount > 0){
+		transform.GetChild(0).GetComponent("WingsController").DeactivateWings();
+		syncHelper.switchMyWings(networkView.viewID, wingsAreActivated);
+	}
 	collider.size.y = 1;
 	collider.center.y = 0;
 	collider.sharedMaterial = boxRollMaterial;
 	rigidbody.constraints = RigidbodyConstraints.None;
-	if(transform.childCount > 0){
-		Network.Destroy(transform.GetChild(0).gameObject);
+	for (var i=0;i<transform.childCount;i++) {
+		Network.Destroy(transform.GetChild(i).gameObject);
 	}
+	syncHelper.getHeavy(networkView.viewID);
+	Debug.Log(networkView.viewID);
 	if(wingsAreActivated) SwitchWings();
 	if(skatesAreActivated) SwitchSkates();
 }
@@ -338,10 +344,12 @@ function SwitchHeavy(){
 			heavyIsActivated = true;
 			maxSpeed = originalMaxSpeed/2;
 			gameObject.renderer.material.color = Color.gray;
+			syncHelper.switchMyHeavy(networkView.viewID, heavyIsActivated);
 		} else {
 			heavyIsActivated = false;
 			maxSpeed = originalMaxSpeed;
 			gameObject.renderer.material.color = coloration;
+			syncHelper.switchMyHeavy(networkView.viewID, heavyIsActivated);
 		}
 	} else {
 		heavyIsActivated = false;
