@@ -50,9 +50,6 @@ function FixedUpdate(){
 	} 
 	else if (doorIsOpened && transform.position.y == targetHeight) {
 		doorIsOpened = false;
-		Debug.Log("Height: " + transform.position.y);
-		Debug.Log("Target: " + targetHeight);
-		Debug.Log("Finished");
 		if(Network.isServer)
 			networkView.RPC("RPCPlaySound", RPCMode.All);
 	}
