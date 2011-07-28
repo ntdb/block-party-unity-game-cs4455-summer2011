@@ -15,6 +15,15 @@ function switchMyHeavy(me : NetworkViewID, activating : boolean){
 		networkView.RPC("RPCSwitchHeavy", RPCMode.AllBuffered, me, activating);
 }
 
+function firePowerup(me: NetworkViewID, activating : boolean, powerupFunction : String){
+	networkView.RPC("RPCServerFirePowerup", RPCMode.Server, me, activating, powerupFunction);
+}
+
+@RPC
+function RPCServerFirePowerup(player : NetworkViewID, activating : boolean, powerupFunction : String){
+	networkView.RPC(powerupFunction, RPCMode.AllBuffered, player, activating);
+}
+
 @RPC
 function RPCSwitchSkates(player : NetworkViewID, activating : boolean){
 	var other : Transform = NetworkView.Find(player).transform;
