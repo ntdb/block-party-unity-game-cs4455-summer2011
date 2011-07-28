@@ -97,8 +97,33 @@ function OnCollisionEnter (collision : Collision)
 	}
 }
 
+function collisionEnterProxy (collision : Collision){
+	if(gliding){
+		canMove = true;
+	} else {
+		if(collision.gameObject.layer == 8){
+			grounded = true;
+			jumping = false;
+			doubleJumping = false;
+			canMove = true;
+			if(wingsAreActivated) SwitchWings();
+		} else if(collision.gameObject.layer == 9 && !grounded && !wingsAreActivated){
+			canMove = false;
+		}
+	}
+}
+
 function OnCollisionExit (collision : Collision)
 {
+	if(collision.gameObject.layer == 8){
+		grounded = false;
+		groundedCounter = 30;
+	} else if(collision.gameObject.layer == 9){
+		canMove = true;
+	}
+}
+
+function collisionExitProxy (collision : Collision){
 	if(collision.gameObject.layer == 8){
 		grounded = false;
 		groundedCounter = 30;
@@ -224,11 +249,9 @@ function GetGlidePowerUp(){
 	HasGlidePowerUp = true;
 	HasRocketSkates = false;
 	HasHeavyPowerUp = false;
-	collider.sharedMaterial = boxRollMaterial;
-	collider.size.y = 1;
-	collider.center.y = 0;
 	rigidbody.constraints = RigidbodyConstraints.None;
 	transform.GetChild(0).localPosition = Vector3(0.0, 0.65, 0.0);
+	transform.GetChild(0).collider.enabled = false;
 	syncHelper.getGlidePowerUp(networkView.viewID);
 	if(heavyIsActivated) SwitchHeavy();
 	if(skatesAreActivated) SwitchSkates();
@@ -239,11 +262,10 @@ function GetRocketSkatesPowerUp(){
 	HasGlidePowerUp = false;
 	HasHeavyPowerUp = false;
 	transform.position = Vector3(transform.position.x, transform.position.y + 0.5, transform.position.z);
-	collider.size.y = 1.6;
-	collider.center.y = -0.3;
 	rigidbody.angularVelocity == Vector3(0,0,0);
 	rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
 	transform.GetChild(0).localPosition = Vector3(0.0, 0.0, 0.0);
+	transform.GetChild(0).collider.enabled = true;
 	syncHelper.getRocketSkates(networkView.viewID);
 	if(heavyIsActivated) SwitchHeavy();
 	if(wingsAreActivated) SwitchWings();
@@ -253,11 +275,9 @@ function GetHeavyPowerUp(){
 	HasHeavyPowerUp = true;
 	HasRocketSkates = false;
 	HasGlidePowerUp = false;
-	collider.size.y = 1;
-	collider.center.y = 0;
-	collider.sharedMaterial = boxRollMaterial;
 	rigidbody.constraints = RigidbodyConstraints.None;
 	transform.GetChild(0).localPosition = Vector3(0.0, 0.65, 0.0);
+	transform.GetChild(0).collider.enabled = false;
 	syncHelper.getHeavyPowerUp(networkView.viewID);
 	if(wingsAreActivated) SwitchWings();
 	if(skatesAreActivated) SwitchSkates();
@@ -280,7 +300,6 @@ function SwitchWings(){
 			rigidbody.useGravity = false;
 			transform.GetChild(1).GetComponent("WingsController").ActivateWings();
 			syncHelper.firePowerup(networkView.viewID, true, "switchMyWings");
-			transform.rotation = Quaternion.identity;
 			rigidbody.angularVelocity = Vector3(0,0,0);
 			rigidbody.constraints = RigidbodyConstraints.FreezePositionY || RigidbodyConstraints.FreezeRotationX || RigidbodyConstraints.FreezeRotationZ;
 		} else {
