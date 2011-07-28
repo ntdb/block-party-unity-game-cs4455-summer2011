@@ -279,7 +279,7 @@ function SwitchWings(){
 			wingsAreActivated = true;
 			rigidbody.useGravity = false;
 			transform.GetChild(1).GetComponent("WingsController").ActivateWings();
-			syncHelper.switchMyWings(networkView.viewID, wingsAreActivated);
+			syncHelper.firePowerup(networkView.viewID, true, "switchMyWings");
 			transform.rotation = Quaternion.identity;
 			rigidbody.angularVelocity = Vector3(0,0,0);
 			rigidbody.constraints = RigidbodyConstraints.FreezePositionY || RigidbodyConstraints.FreezeRotationX || RigidbodyConstraints.FreezeRotationZ;
@@ -288,7 +288,7 @@ function SwitchWings(){
 			rigidbody.useGravity = true;
 			rigidbody.constraints = RigidbodyConstraints.None;
 			transform.GetChild(1).GetComponent("WingsController").DeactivateWings();
-			syncHelper.switchMyWings(networkView.viewID, wingsAreActivated);
+			syncHelper.firePowerup(networkView.viewID, false, "switchMyWings");
 		}
 	} else {
 		wingsAreActivated = false;
@@ -304,13 +304,13 @@ function SwitchSkates(){
 //			rigidbody.useGravity = false;
 			maxSpeed = skatesSpeed;
 			transform.GetChild(0).GetComponent("JetSkates").TurnOnJets();
-			syncHelper.switchMySkates(networkView.viewID, true);
+			syncHelper.firePowerup(networkView.viewID, true, "switchMySkates");
 		} else {
 			skatesAreActivated = false;
 //			rigidbody.useGravity = true;
 			maxSpeed = originalMaxSpeed;
 			transform.GetChild(0).GetComponent("JetSkates").TurnOffJets();
-			syncHelper.switchMySkates(networkView.viewID, false);
+			syncHelper.firePowerup(networkView.viewID, false, "switchMySkates");
 		}
 	} else {
 		skatesAreActivated = false;
