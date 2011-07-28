@@ -10,3 +10,9 @@ function Update () {
 	transform.position.y = target.position.y + height;
 	transform.position.z = target.position.z;
 }
+
+function OnPlayerDisconnected (player : NetworkPlayer) {
+	if(!NetworkView.IsMine) {
+		Destroy(GameObject);
+	}
+}
