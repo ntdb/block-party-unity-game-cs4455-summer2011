@@ -5,7 +5,7 @@ public var xAxisMovement : boolean = true;
 public var moveSpeed : float = 3.0;
 private var waitingAtDestinationPosition : boolean = false;
 private var pauseTimer : float = 0.0;
-public var pauseDuration : float = 2.0;
+public var pauseDuration : float = 4.0;
 private var act : boolean = false;
 
 function Activate(){
