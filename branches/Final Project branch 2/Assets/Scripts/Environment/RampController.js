@@ -30,7 +30,7 @@ function Update () {
 	} else if (act) {
 		if(xAxisMovement){
 			if(!Mathf.Approximately(transform.position.x, targetPosition)) {
-				transform.position.x = Mathf.MoveTowards(transform.position.x, targetPosition, moveSpeed * Time.deltaTime);
+				rigidbody.MovePosition(Vector3(Mathf.MoveTowards(transform.position.x, targetPosition, moveSpeed * Time.deltaTime), rigidbody.position.y, rigidbody.position.z));
 			} else {
 				if(targetPosition == destinationPosition){
 					waitingAtDestinationPosition = true;
@@ -40,7 +40,7 @@ function Update () {
 			}
 		} else { // zAxisMovement
 			if(!Mathf.Approximately(transform.position.z, targetPosition)) {
-				transform.position.z = Mathf.MoveTowards(transform.position.z, targetPosition, moveSpeed * Time.deltaTime);
+				rigidbody.MovePosition(Vector3(rigidbody.position.x, rigidbody.position.y, Mathf.MoveTowards(transform.position.z, targetPosition, moveSpeed * Time.deltaTime)));
 			} else {
 				if(targetPosition == destinationPosition){
 					waitingAtDestinationPosition = true;
