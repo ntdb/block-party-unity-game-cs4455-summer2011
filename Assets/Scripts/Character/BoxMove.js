@@ -301,13 +301,11 @@ function SwitchSkates(){
 	if(HasRocketSkates){
 		if(!skatesAreActivated){
 			skatesAreActivated = true;
-//			rigidbody.useGravity = false;
 			maxSpeed = skatesSpeed;
 			transform.GetChild(0).GetComponent("JetSkates").TurnOnJets();
 			syncHelper.firePowerup(networkView.viewID, true, "switchMySkates");
 		} else {
 			skatesAreActivated = false;
-//			rigidbody.useGravity = true;
 			maxSpeed = originalMaxSpeed;
 			transform.GetChild(0).GetComponent("JetSkates").TurnOffJets();
 			syncHelper.firePowerup(networkView.viewID, false, "switchMySkates");
