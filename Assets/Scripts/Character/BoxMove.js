@@ -326,12 +326,12 @@ function SwitchHeavy(){
 			heavyIsActivated = true;
 			maxSpeed = originalMaxSpeed/2;
 			gameObject.renderer.material.color = Color.gray;
-			syncHelper.switchMyHeavy(networkView.viewID, true);
+			syncHelper.firePowerup(networkView.viewID, true, "switchMyHeavy");
 		} else {
 			heavyIsActivated = false;
 			maxSpeed = originalMaxSpeed;
 			gameObject.renderer.material.color = coloration;
-			syncHelper.switchMyHeavy(networkView.viewID, false);
+			syncHelper.firePowerup(networkView.viewID, false, "switchMyHeavy");
 		}
 	} else {
 		heavyIsActivated = false;
