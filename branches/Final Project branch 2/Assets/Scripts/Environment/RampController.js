@@ -30,7 +30,7 @@ function Update () {
 	} else if (act) {
 		if(xAxisMovement){
 			if(!Mathf.Approximately(transform.position.x, targetPosition)) {
-				rigidbody.MovePosition(Vector3(Mathf.MoveTowards(transform.position.x, targetPosition, moveSpeed * Time.deltaTime), rigidbody.position.y, rigidbody.z));
+				rigidbody.MovePosition(Vector3(Mathf.MoveTowards(transform.position.x, targetPosition, moveSpeed * Time.deltaTime), rigidbody.position.y, rigidbody.position.z));
 			} else {
 				if(targetPosition == destinationPosition){
 					waitingAtDestinationPosition = true;
