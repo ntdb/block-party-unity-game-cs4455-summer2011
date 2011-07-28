@@ -12,7 +12,7 @@ function switchMyWings(me : NetworkViewID, activating : boolean){
 
 function switchMyHeavy(me : NetworkViewID, activating : boolean){
 	if(networkView.isMine)
-		networkView.RPC("RPCSwitchHeavy", RPCMode.OthersBuffered, me, activating);
+		networkView.RPC("RPCSwitchHeavy", RPCMode.AllBuffered, me, activating);
 }
 
 @RPC
